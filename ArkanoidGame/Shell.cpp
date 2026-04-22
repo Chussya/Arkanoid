@@ -6,9 +6,9 @@ namespace ArkanoidGame
 {
 	// Private
 
-	void Shell::attachToPlatform()
+	void Shell::attachToPlatform(const float platformHeight)
 	{
-		shell.setPosition({ ptrPlatformPos->x, ptrPlatformPos->y - PLATFORM_HEIGHT_DEFAULT });
+		shell.setPosition({ ptrPlatformPos->x, ptrPlatformPos->y - platformHeight });
 
 		vectorSpeed.x = 0;
 		vectorSpeed.y = 0;
@@ -16,18 +16,9 @@ namespace ArkanoidGame
 
 	// Public
 
-	Shell::Shell() :
-		state{ EShellState::Empty }, ptrPlatformPos{ nullptr }, speed{ 0.f }
-	{
-		shell.setRadius(ArkanoidGame::BALL_RADIUS_DEFAULT);
-		shell.setFillColor(sf::Color::Red);
-		shell.setOrigin(ArkanoidGame::BALL_RADIUS_DEFAULT, ArkanoidGame::BALL_RADIUS_DEFAULT);
-	}
+	Shell::Shell() : state{ EShellState::Empty }, ptrPlatformPos{ nullptr }, speed{ 0.f } {}
 
-	Shell::~Shell()
-	{
-		delete ptrPlatformPos;
-	}
+	Shell::~Shell() {}
 
 	void Shell::setSpeed(const float speed)
 	{
@@ -39,16 +30,54 @@ namespace ArkanoidGame
 		return !state.IsBitMaskOn(EShellState::Fallen) && state.IsBitMaskOn(EShellState::Striked);
 	}
 
+	bool Shell::isStriked()
+	{
+		return state.IsBitMaskOn(EShellState::Striked);
+	}
+
 	void Shell::strike()
 	{
 		this->state.TurnOnMask(EShellState::Striked);
 		vectorSpeed.y = -speed;
 	}
 
-	void Shell::memorisePlatformPos(Vector2Df& pos)
+	void Shell::reflection(const float screenWidth, const float sreenHeight, const Vector2Df& platformSize)
+	{
+		// Side reflection
+		if (shell.getPosition().x - shell.getRadius() <= 0.f || shell.getPosition().x + shell.getRadius() >= screenWidth)
+		{
+			vectorSpeed.x = -vectorSpeed.x;
+		}
+		// ceil reflection
+		if (shell.getPosition().y - shell.getRadius() <= 0.f)
+		{
+			vectorSpeed.y = -vectorSpeed.y;
+		}
+		// platform reflection
+		else if (ArkanoidGame::Math::isCircleCollideRect(convert<Vector2Df>(shell.getPosition()), shell.getRadius(), *ptrPlatformPos, platformSize.x, platformSize.y))
+		{
+			vectorSpeed.x = speed * ((shell.getPosition().x - ptrPlatformPos->x) / (platformSize.x / 2));
+			vectorSpeed.y = -vectorSpeed.y;
+		}
+		// Shell fell
+		else if (shell.getPosition().y + shell.getRadius() >= sreenHeight)
+		{
+			state.TurnOffMask(EShellState::Striked);
+			attachToPlatform(platformSize.y);
+		}
+	}
+
+	void Shell::memorisePlatformPos(Vector2Df& pos, const float platformHeight)
 	{
 		this->ptrPlatformPos = &pos;
-		attachToPlatform();
+		attachToPlatform(platformHeight);
+	}
+
+	void Shell::init(const GameSettings& gameSettings)
+	{
+		shell.setRadius(gameSettings.BALL_RADIUS_DEFAULT);
+		shell.setFillColor(sf::Color::Red);
+		shell.setOrigin(gameSettings.BALL_RADIUS_DEFAULT, gameSettings.BALL_RADIUS_DEFAULT);
 	}
 
 	void Shell::move(const float deltaTime)
@@ -62,32 +91,6 @@ namespace ArkanoidGame
 		} else
 		{
 			shell.setPosition({ ptrPlatformPos->x, shell.getPosition().y });
-		}
-	}
-
-	void Shell::reflection(const Vector2Df& platformSize)
-	{
-		// Side reflection
-		if (shell.getPosition().x - shell.getRadius() <= 0.f || shell.getPosition().x + shell.getRadius() >= ArkanoidGame::SCREEN_WIDTH_GAME)
-		{
-			vectorSpeed.x = -vectorSpeed.x;
-		}
-		// ceil reflection
-		if (shell.getPosition().y - shell.getRadius() <= 0.f)
-		{
-			vectorSpeed.y = -vectorSpeed.y;
-		}
-		// platform reflection
-		else if (ArkanoidGame::Math::isCircleCollideRect(convert<Vector2Df>(shell.getPosition()), shell.getRadius(), *ptrPlatformPos, PLATFORM_WIDTH_DEFAULT, PLATFORM_HEIGHT_DEFAULT))
-		{
-			vectorSpeed.x = speed * ((shell.getPosition().x - ptrPlatformPos->x) / (platformSize.x / 2));
-			vectorSpeed.y = -vectorSpeed.y;
-		}
-		// Shell fell
-		else if (shell.getPosition().y + shell.getRadius() >= ArkanoidGame::SCREEN_HEIGHT_GAME)
-		{
-			state.TurnOffMask(EShellState::Striked);
-			attachToPlatform();
 		}
 	}
 

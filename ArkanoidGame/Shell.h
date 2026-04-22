@@ -7,6 +7,8 @@
 
 namespace ArkanoidGame
 {
+	class GameSettings;
+
 	class Shell
 	{
 	private:
@@ -35,7 +37,7 @@ namespace ArkanoidGame
 		sf::CircleShape shell;
 
 	private:
-		void attachToPlatform();
+		void attachToPlatform(const float platformHeight);
 
 	public:
 		Shell();
@@ -48,13 +50,15 @@ namespace ArkanoidGame
 		// Interaction
 
 		bool isActive();
+		bool isStriked();
 		void strike();
+		void reflection(const float screenWidth, const float sreenHeight, const Vector2Df& platformSize);
+		void memorisePlatformPos(Vector2Df& platformPos, const float platformHeight);
+
+		// Standard methods
+
+		void init(const GameSettings& gameSettigns);
 		void move(const float deltaTime);
-		void reflection(const Vector2Df& platformSize);
-		void memorisePlatformPos(Vector2Df& platformPos);
-
-		// Visual
-
 		void drawOnWindow(sf::RenderWindow& window);
 	};
 }

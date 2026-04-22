@@ -6,18 +6,13 @@
 
 namespace ArkanoidGame
 {
-	Platform::Platform()
-	{
-		platform.setSize({ ArkanoidGame::PLATFORM_WIDTH_DEFAULT, ArkanoidGame::PLATFORM_HEIGHT_DEFAULT });
-		platform.setFillColor(sf::Color::Green);
-		platform.setOrigin(ArkanoidGame::PLATFORM_WIDTH_DEFAULT / 2.f, ArkanoidGame::PLATFORM_HEIGHT_DEFAULT / 2.f);
-	}
+	Platform::Platform() {}
 
 	Platform::~Platform() {}
 
-	void Platform::setStartPosition()
+	void Platform::setStartPosition(float screenWidth, float sreenHeight)
 	{
-		pos = { static_cast<float>(ArkanoidGame::SCREEN_WIDTH_GAME / 2), static_cast<float>(ArkanoidGame::SCREEN_HEIGHT_GAME - (platform.getSize().y / 2)) };
+		pos = { screenWidth / 2, sreenHeight - (platform.getSize().y / 2) };
 
 		platform.setPosition(convert<sf::Vector2f>(pos));
 	}
@@ -25,13 +20,6 @@ namespace ArkanoidGame
 	Vector2Df Platform::getSize()
 	{
 		return convert<Vector2Df>(platform.getSize());
-	}
-
-	void Platform::move(float x)
-	{
-		pos = {x, platform.getPosition().y };
-
-		platform.setPosition(convert<sf::Vector2f>(pos));
 	}
 
 	void Platform::strikeShell(Shell& shell)
@@ -44,7 +32,21 @@ namespace ArkanoidGame
 
 	void Platform::attachShell(Shell& shell)
 	{
-		shell.memorisePlatformPos(pos);
+		shell.memorisePlatformPos(pos, getSize().y);
+	}
+
+	void Platform::init(const GameSettings& gameSettings)
+	{
+		platform.setSize({ gameSettings.PLATFORM_WIDTH_DEFAULT, gameSettings.PLATFORM_HEIGHT_DEFAULT });
+		platform.setFillColor(sf::Color::Green);
+		platform.setOrigin(gameSettings.PLATFORM_WIDTH_DEFAULT / 2.f, gameSettings.PLATFORM_HEIGHT_DEFAULT / 2.f);
+	}
+
+	void Platform::move(const float x)
+	{
+		pos = { x, platform.getPosition().y };
+
+		platform.setPosition(convert<sf::Vector2f>(pos));
 	}
 
 	void Platform::drawOnWindow(sf::RenderWindow& window)

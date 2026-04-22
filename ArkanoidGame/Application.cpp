@@ -4,8 +4,8 @@
 
 namespace ArkanoidGame
 {
-	Application::Application(const std::string& gameName) :
-		window(sf::VideoMode(ArkanoidGame::SCREEN_WIDTH_GAME, ArkanoidGame::SCREEN_HEIGHT_GAME), "Arkanoid")
+	Application::Application(const std::string& gameName) : game(),
+		window(sf::VideoMode(game.getGameSettigns().SCREEN_WIDTH_GAME, game.getGameSettigns().SCREEN_HEIGHT_GAME), "Arkanoid")
 	{
 		// Init random number generator
 		unsigned int seed = (unsigned int)time(nullptr); // Get current time as seed. You can also use any other number to fix randomization
@@ -38,7 +38,7 @@ namespace ArkanoidGame
 				break;
 			}
 
-			if (game.UpdateGame(ArkanoidGame::TIME_PER_FRAME))
+			if (game.UpdateGame(game.getGameSettigns().TIME_PER_FRAME))
 			{
 				// Draw everything here
 				// Clear the window first
@@ -55,10 +55,10 @@ namespace ArkanoidGame
 
 			float endTime = gameClock.getElapsedTime().asSeconds();
 			float deltaTime = endTime - startTime;
-			if (deltaTime < TIME_PER_FRAME)
+			if (deltaTime < game.getGameSettigns().TIME_PER_FRAME)
 			{
 				// Reduce framerate to not spam CPU and GPU
-				sf::sleep(sf::seconds(TIME_PER_FRAME - deltaTime));
+				sf::sleep(sf::seconds(game.getGameSettigns().TIME_PER_FRAME - deltaTime));
 			}
 		}
 	}

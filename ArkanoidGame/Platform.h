@@ -7,6 +7,7 @@
 namespace ArkanoidGame
 {
 	class Shell;
+	class GameSettings;
 
 	class Platform
 	{
@@ -18,15 +19,21 @@ namespace ArkanoidGame
 		Platform();
 		~Platform();
 
-		void setStartPosition();
+		// Setters
+
+		void setStartPosition(float screenWidth, float sreenHeight);
+
+		// Interaction
 
 		Vector2Df getSize();
-
-		void move(float x);
 
 		void attachShell(Shell& shell);
 		void strikeShell(Shell& shell);
 
+		// Standard methods
+
+		void init(const GameSettings& gameSettings);
+		void move(const float x);
 		void drawOnWindow(sf::RenderWindow& window);
 	};
 }
