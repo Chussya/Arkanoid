@@ -16,6 +16,10 @@ namespace ArkanoidGame
 		{
 			player.strikeShell(shell);
 		}
+		if (event.type == sf::Event::MouseMoved)
+		{
+			player.move(static_cast<float>(event.mouseMove.x));
+		}
 	}
 
 	void GameStatePlayingData::InitGameState(Game& game)
@@ -44,7 +48,7 @@ namespace ArkanoidGame
 
 		/// Set platform
 
-		player.setStartPosition(ArkanoidGame::SCREEN_WIDTH_GAME, ArkanoidGame::SCREEN_HEIGHT_GAME);
+		player.setStartPosition();
 
 		/// Set shell:
 
@@ -58,7 +62,6 @@ namespace ArkanoidGame
 	void GameStatePlayingData::DrawGameState(Game& game, sf::RenderWindow& window)
 	{
 		// Game objects
-		player.move(static_cast<float>(sf::Mouse::getPosition(window).x));
 
 		player.drawOnWindow(window);
 		shell.drawOnWindow(window);
@@ -75,7 +78,8 @@ namespace ArkanoidGame
 		// Update scores:
 		//data.scoreText.setString("SCORES: " + std::to_string(data.numEatenApples));\
 		
-		shell.move(player.getSize(), deltaTime);
+		shell.reflection(player.getSize());
+		shell.move(deltaTime);
 	}
 
 	void GameStatePlayingData::ShutdownGameState(Game& game)

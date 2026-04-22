@@ -29,6 +29,8 @@ namespace ArkanoidGame
 		Game();
 		~Game();
 
+		// Getters
+
 		GameSettings getGameSettigns();
 
 		void HandleWindowEvents(sf::RenderWindow& window);

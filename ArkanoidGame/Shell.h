@@ -35,21 +35,25 @@ namespace ArkanoidGame
 		sf::CircleShape shell;
 
 	private:
-		void reflection(const Vector2Df& platformSize);
 		void attachToPlatform();
 
 	public:
 		Shell();
 		~Shell();
 
+		// Setters
+
 		void setSpeed(const float speed);
 
-		void strike();
-
-		void memorisePlatformPos(Vector2Df& platformPos);
-		void move(const Vector2Df& platformSize, const float deltaTime);
+		// Interaction
 
 		bool isActive();
+		void strike();
+		void move(const float deltaTime);
+		void reflection(const Vector2Df& platformSize);
+		void memorisePlatformPos(Vector2Df& platformPos);
+
+		// Visual
 
 		void drawOnWindow(sf::RenderWindow& window);
 	};

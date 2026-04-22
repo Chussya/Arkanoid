@@ -15,9 +15,9 @@ namespace ArkanoidGame
 
 	Platform::~Platform() {}
 
-	void Platform::setStartPosition(int windowWidth, int windowHeight)
+	void Platform::setStartPosition()
 	{
-		pos = { static_cast<float>(windowWidth / 2), static_cast<float>(windowHeight - (platform.getSize().y / 2)) };
+		pos = { static_cast<float>(ArkanoidGame::SCREEN_WIDTH_GAME / 2), static_cast<float>(ArkanoidGame::SCREEN_HEIGHT_GAME - (platform.getSize().y / 2)) };
 
 		platform.setPosition(convert<sf::Vector2f>(pos));
 	}

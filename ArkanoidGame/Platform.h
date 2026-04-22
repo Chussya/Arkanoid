@@ -18,7 +18,7 @@ namespace ArkanoidGame
 		Platform();
 		~Platform();
 
-		void setStartPosition(int windowWidth, int windowHeight);
+		void setStartPosition();
 
 		Vector2Df getSize();
 
