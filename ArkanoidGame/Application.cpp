@@ -4,8 +4,8 @@
 
 namespace ArkanoidGame
 {
-	Application::Application(const std::string& gameName) :
-		window(sf::VideoMode(ArkanoidGame::SCREEN_WIDTH_GAME, ArkanoidGame::SCREEN_HEIGHT_GAME), "Arkanoid")
+	Application::Application(const std::string& gameName) : game(),
+		window(sf::VideoMode(GAME_SETTINGS.SCREEN_WIDTH_GAME, GAME_SETTINGS.SCREEN_HEIGHT_GAME), "Arkanoid")
 	{
 		// Init random number generator
 		unsigned int seed = (unsigned int)time(nullptr); // Get current time as seed. You can also use any other number to fix randomization
@@ -31,20 +31,20 @@ namespace ArkanoidGame
 
 			float startTime = gameClock.getElapsedTime().asSeconds();
 
-			game.HandleWindowEvents(window);
+			game.handleWindowEvents(window);
 
 			if (!window.isOpen())
 			{
 				break;
 			}
 
-			if (game.UpdateGame(ArkanoidGame::TIME_PER_FRAME))
+			if (game.update(GAME_SETTINGS.TIME_PER_FRAME))
 			{
 				// Draw everything here
 				// Clear the window first
 				window.clear();
 
-				game.DrawGame(window);
+				game.draw(window);
 
 				// End the current frame, display window contents on screen
 				window.display();
@@ -55,10 +55,10 @@ namespace ArkanoidGame
 
 			float endTime = gameClock.getElapsedTime().asSeconds();
 			float deltaTime = endTime - startTime;
-			if (deltaTime < TIME_PER_FRAME)
+			if (deltaTime < GAME_SETTINGS.TIME_PER_FRAME)
 			{
 				// Reduce framerate to not spam CPU and GPU
-				sf::sleep(sf::seconds(TIME_PER_FRAME - deltaTime));
+				sf::sleep(sf::seconds(GAME_SETTINGS.TIME_PER_FRAME - deltaTime));
 			}
 		}
 	}

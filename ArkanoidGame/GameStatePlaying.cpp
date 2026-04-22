@@ -8,20 +8,22 @@
 
 namespace ArkanoidGame
 {
-	GameStatePlayingData::GameStatePlayingData() {}
-
-	void GameStatePlayingData::HandleGameStateWindowEvent(Game& game, const sf::Event event)
+	void GameStatePlayingData::handleWindowEvent(const sf::Event event)
 	{
 		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 		{
 			player.strikeShell(shell);
 		}
+		if (event.type == sf::Event::MouseMoved)
+		{
+			mouseMoveX = static_cast<float>(event.mouseMove.x);
+		}
 	}
 
-	void GameStatePlayingData::InitGameState(Game& game)
+	void GameStatePlayingData::init()
 	{
 		// Init fonts
-		assert(font.loadFromFile(RESOURCES_PATH + "Fonts/arial.ttf"));
+		assert(font.loadFromFile(GAME_SETTINGS.RESOURCES_PATH + "Fonts/arial.ttf"));
 
 		/// Init textures
 		//assert(data.appleTexture.loadFromFile(RESOURCES_PATH + "Images/apple.png"));
@@ -42,24 +44,24 @@ namespace ArkanoidGame
 		//InitText(data.pauseNote, "For pause use [P]", data.font, sf::Color::White, 20);
 		//SetTextOrigin(data.pauseNote, ETextOrigin::RightTop);
 
-		/// Set platform
+		/// Init platform
 
-		player.setStartPosition(ArkanoidGame::SCREEN_WIDTH_GAME, ArkanoidGame::SCREEN_HEIGHT_GAME);
+		player.init();
+		player.setStartPosition();
 
 		/// Set shell:
 
-		shell.setSpeed(game.getGameSettigns().shellSpeed);
+		shell.init();
+		shell.setSpeed(GAME_SETTINGS.getShellSpeed());
 
 		player.attachShell(shell);
 
 		//game.ptrPlayerScores = &data.numEatenApples;
 	}
 
-	void GameStatePlayingData::DrawGameState(Game& game, sf::RenderWindow& window)
+	void GameStatePlayingData::draw(sf::RenderWindow& window)
 	{
 		// Game objects
-		player.move(static_cast<float>(sf::Mouse::getPosition(window).x));
-
 		player.drawOnWindow(window);
 		shell.drawOnWindow(window);
 
@@ -67,18 +69,23 @@ namespace ArkanoidGame
 		window.draw(scoreText);
 		scoreText.setPosition(0, 0);
 		window.draw(pauseNote);
-		pauseNote.setPosition(SCREEN_WIDTH_GAME - 1, 0);
+		pauseNote.setPosition(static_cast<float>(GAME_SETTINGS.SCREEN_WIDTH_GAME - 1), 0.f);
 	}
 
-	void GameStatePlayingData::UpdateGameState(Game& game, float deltaTime)
+	void GameStatePlayingData::update(float deltaTime)
 	{
 		// Update scores:
 		//data.scoreText.setString("SCORES: " + std::to_string(data.numEatenApples));\
-		
-		shell.move(player.getSize(), deltaTime);
+
+		// Check shell reflection
+		shell.reflection(player.getSize());
+
+		// Move game objects
+		shell.move(deltaTime);
+		player.move(mouseMoveX);
 	}
 
-	void GameStatePlayingData::ShutdownGameState(Game& game)
+	void GameStatePlayingData::shutdown()
 	{
 		// Stop music
 		//game.music.stop();

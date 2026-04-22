@@ -20,28 +20,23 @@ namespace ArkanoidGame
 		EGameStateType pendingGameStateType = EGameStateType::None;
 		bool pendingGameStateIsExclusivelyVisible = false;
 
-		sf::Music music;
-
-		GameSettings gameSettings;
 		std::unordered_map<std::string, int> records;
 
 	public:
 		Game();
 		~Game();
 
-		GameSettings getGameSettigns();
-
-		void HandleWindowEvents(sf::RenderWindow& window);
-		bool UpdateGame(float deltaTime); // Return false if game should be closed
-		void DrawGame(sf::RenderWindow& window);
+		void handleWindowEvents(sf::RenderWindow& window);
+		bool update(float deltaTime); // Return false if game should be closed
+		void draw(sf::RenderWindow& window);
 
 		// Add new game state on top of the stack
-		void PushGameState(EGameStateType stateType, bool isExclusivelyVisible);
+		void pushGameState(EGameStateType stateType, bool isExclusivelyVisible);
 
 		// Remove current game state from the stack
-		void PopGameState();
+		void popGameState();
 
 		// Remove all game states from the stack and add new one
-		void SwitchGameState(EGameStateType newState);
+		void switchGameState(EGameStateType newState);
 	};
 }

@@ -37,6 +37,9 @@
     <ClCompile Include="GameState.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="GameSettings.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
