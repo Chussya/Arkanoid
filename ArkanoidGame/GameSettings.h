@@ -7,6 +7,9 @@ namespace ArkanoidGame
 	class GameSettings
 	{
 	private:
+
+		GameSettings() = default;
+
 		// Music
 
 		float soundLoud{ 20.f };
@@ -47,9 +50,12 @@ namespace ArkanoidGame
 		const std::string DEFAULT_PLAYER_NAME{ "XYZ" };
 		const int PLAYER_NAME_LENGTH{ 25 };
 
-		// Constructor & Destructor
-		GameSettings();
-		~GameSettings();
+		// Single instance of game settings
+		static GameSettings& Instance()
+		{
+			static GameSettings gameSettings;
+			return gameSettings;
+		}
 
 		// Getters
 
@@ -66,3 +72,5 @@ namespace ArkanoidGame
 		void setPlayerName(std::string playerName);
 	};
 }
+
+#define GAME_SETTINGS GameSettings::Instance()

@@ -2,19 +2,6 @@
 
 namespace ArkanoidGame
 {
-	GameSettings::GameSettings()
-	{
-		float soundLoud{ 20.f };
-		float musicLoud{ 20.f };
-
-		float shellSpeed{ 400.f };
-
-		std::string playerName{ DEFAULT_PLAYER_NAME };
-	}
-
-	GameSettings::~GameSettings()
-	{}
-
 	float GameSettings::getSoundLoud()
 	{
 		return soundLoud;

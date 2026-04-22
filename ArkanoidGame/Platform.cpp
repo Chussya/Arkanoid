@@ -10,9 +10,9 @@ namespace ArkanoidGame
 
 	Platform::~Platform() {}
 
-	void Platform::setStartPosition(float screenWidth, float sreenHeight)
+	void Platform::setStartPosition()
 	{
-		pos = { screenWidth / 2, sreenHeight - (platform.getSize().y / 2) };
+		pos = { static_cast<float>(GAME_SETTINGS.SCREEN_WIDTH_GAME / 2), GAME_SETTINGS.SCREEN_HEIGHT_GAME - (platform.getSize().y / 2) };
 
 		platform.setPosition(convert<sf::Vector2f>(pos));
 	}
@@ -32,14 +32,14 @@ namespace ArkanoidGame
 
 	void Platform::attachShell(Shell& shell)
 	{
-		shell.memorisePlatformPos(pos, getSize().y);
+		shell.memorisePlatformPos(pos);
 	}
 
-	void Platform::init(const GameSettings& gameSettings)
+	void Platform::init()
 	{
-		platform.setSize({ gameSettings.PLATFORM_WIDTH_DEFAULT, gameSettings.PLATFORM_HEIGHT_DEFAULT });
+		platform.setSize({ GAME_SETTINGS.PLATFORM_WIDTH_DEFAULT, GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT });
 		platform.setFillColor(sf::Color::Green);
-		platform.setOrigin(gameSettings.PLATFORM_WIDTH_DEFAULT / 2.f, gameSettings.PLATFORM_HEIGHT_DEFAULT / 2.f);
+		platform.setOrigin(GAME_SETTINGS.PLATFORM_WIDTH_DEFAULT / 2.f, GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT / 2.f);
 	}
 
 	void Platform::move(const float x)

@@ -6,9 +6,9 @@ namespace ArkanoidGame
 {
 	// Private
 
-	void Shell::attachToPlatform(const float platformHeight)
+	void Shell::attachToPlatform()
 	{
-		shell.setPosition({ ptrPlatformPos->x, ptrPlatformPos->y - platformHeight });
+		shell.setPosition({ ptrPlatformPos->x, ptrPlatformPos->y - GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT });
 
 		vectorSpeed.x = 0;
 		vectorSpeed.y = 0;
@@ -37,47 +37,50 @@ namespace ArkanoidGame
 
 	void Shell::strike()
 	{
-		this->state.TurnOnMask(EShellState::Striked);
+		state.TurnOnMask(EShellState::Striked);
 		vectorSpeed.y = -speed;
 	}
 
-	void Shell::reflection(const float screenWidth, const float sreenHeight, const Vector2Df& platformSize)
+	void Shell::reflection(const Vector2Df& platformSize)
 	{
-		// Side reflection
-		if (shell.getPosition().x - shell.getRadius() <= 0.f || shell.getPosition().x + shell.getRadius() >= screenWidth)
+		if (isStriked())
 		{
-			vectorSpeed.x = -vectorSpeed.x;
-		}
-		// ceil reflection
-		if (shell.getPosition().y - shell.getRadius() <= 0.f)
-		{
-			vectorSpeed.y = -vectorSpeed.y;
-		}
-		// platform reflection
-		else if (ArkanoidGame::Math::isCircleCollideRect(convert<Vector2Df>(shell.getPosition()), shell.getRadius(), *ptrPlatformPos, platformSize.x, platformSize.y))
-		{
-			vectorSpeed.x = speed * ((shell.getPosition().x - ptrPlatformPos->x) / (platformSize.x / 2));
-			vectorSpeed.y = -vectorSpeed.y;
-		}
-		// Shell fell
-		else if (shell.getPosition().y + shell.getRadius() >= sreenHeight)
-		{
-			state.TurnOffMask(EShellState::Striked);
-			attachToPlatform(platformSize.y);
+			// Side reflection
+			if (shell.getPosition().x - shell.getRadius() <= 0.f || shell.getPosition().x + shell.getRadius() >= GAME_SETTINGS.SCREEN_WIDTH_GAME)
+			{
+				vectorSpeed.x = -vectorSpeed.x;
+			}
+			// ceil reflection
+			if (shell.getPosition().y - shell.getRadius() <= 0.f)
+			{
+				vectorSpeed.y = -vectorSpeed.y;
+			}
+			// platform reflection
+			else if (ArkanoidGame::Math::isCircleCollideRect(convert<Vector2Df>(shell.getPosition()), shell.getRadius(), *ptrPlatformPos, platformSize.x, platformSize.y))
+			{
+				vectorSpeed.x = speed * ((shell.getPosition().x - ptrPlatformPos->x) / (platformSize.x / 2));
+				vectorSpeed.y = -vectorSpeed.y;
+			}
+			// Shell fell
+			else if (shell.getPosition().y + shell.getRadius() >= GAME_SETTINGS.SCREEN_HEIGHT_GAME)
+			{
+				state.TurnOffMask(EShellState::Striked);
+				attachToPlatform();
+			}
 		}
 	}
 
-	void Shell::memorisePlatformPos(Vector2Df& pos, const float platformHeight)
+	void Shell::memorisePlatformPos(Vector2Df& pos)
 	{
 		this->ptrPlatformPos = &pos;
-		attachToPlatform(platformHeight);
+		attachToPlatform();
 	}
 
-	void Shell::init(const GameSettings& gameSettings)
+	void Shell::init()
 	{
-		shell.setRadius(gameSettings.BALL_RADIUS_DEFAULT);
+		shell.setRadius(GAME_SETTINGS.BALL_RADIUS_DEFAULT);
 		shell.setFillColor(sf::Color::Red);
-		shell.setOrigin(gameSettings.BALL_RADIUS_DEFAULT, gameSettings.BALL_RADIUS_DEFAULT);
+		shell.setOrigin(GAME_SETTINGS.BALL_RADIUS_DEFAULT, GAME_SETTINGS.BALL_RADIUS_DEFAULT);
 	}
 
 	void Shell::move(const float deltaTime)

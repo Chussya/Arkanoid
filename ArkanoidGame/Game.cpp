@@ -18,7 +18,7 @@ namespace ArkanoidGame
 		this->pendingGameStateType = EGameStateType::None;
 		this->pendingGameStateIsExclusivelyVisible = false;
 		//SwitchGameState(EGameStateType::MainMenu);
-		SwitchGameState(EGameStateType::Playing);
+		switchGameState(EGameStateType::Playing);
 	}
 
 	Game::~Game()
@@ -26,7 +26,6 @@ namespace ArkanoidGame
 		// Shutdown all game states
 		while (this->gameStateStack.size() > 0)
 		{
-			gameStateStack.back().ShutdownGameState(*this);
 			this->gameStateStack.pop_back();
 		}
 
@@ -35,12 +34,7 @@ namespace ArkanoidGame
 		this->pendingGameStateIsExclusivelyVisible = false;
 	}
 
-	GameSettings Game::getGameSettigns()
-	{
-		return this->gameSettings;
-	}
-
-	void Game::HandleWindowEvents(sf::RenderWindow& window)
+	void Game::handleWindowEvents(sf::RenderWindow& window)
 	{
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -53,19 +47,18 @@ namespace ArkanoidGame
 
 			if (this->gameStateStack.size() > 0)
 			{
-				gameStateStack.back().HandleWindowEventGameState(*this, event);
+				gameStateStack.back().handleWindowEvent(event);
 			}
 		}
 	}
 
-	bool Game::UpdateGame(float deltaTime)
+	bool Game::update(float deltaTime)
 	{
 		if (this->gameStateChangeType == EGameStateChangeType::Switch)
 		{
 			// Shutdown all game states
 			while (this->gameStateStack.size() > 0)
 			{
-				gameStateStack.back().ShutdownGameState(*this);
 				this->gameStateStack.pop_back();
 			}
 		} else if (this->gameStateChangeType == EGameStateChangeType::Pop)
@@ -73,7 +66,6 @@ namespace ArkanoidGame
 			// Shutdown only current game state
 			if (this->gameStateStack.size() > 0)
 			{
-				gameStateStack.back().ShutdownGameState(*this);
 				this->gameStateStack.pop_back();
 			}
 		}
@@ -81,8 +73,8 @@ namespace ArkanoidGame
 		// Initialize new game state if needed
 		if (this->pendingGameStateType != EGameStateType::None && this->pendingGameStateType != EGameStateType::Exit)
 		{
-			this->gameStateStack.push_back({ this->pendingGameStateType, nullptr, this->pendingGameStateIsExclusivelyVisible });
-			gameStateStack.back().InitGameState(*this);
+			this->gameStateStack.push_back({ this->pendingGameStateType, this->pendingGameStateIsExclusivelyVisible });
+			gameStateStack.back().init();
 		}
 
 		this->gameStateChangeType = EGameStateChangeType::None;
@@ -91,13 +83,13 @@ namespace ArkanoidGame
 
 		if (this->gameStateStack.size() > 0)
 		{
-			this->gameStateStack.back().UpdateGameState(*this, deltaTime);
+			this->gameStateStack.back().update(deltaTime);
 			return true;
 		}
 		return false;
 	}
 
-	void Game::DrawGame(sf::RenderWindow& window)
+	void Game::draw(sf::RenderWindow& window)
 	{
 		if (this->gameStateStack.size() > 0)
 		{
@@ -113,26 +105,26 @@ namespace ArkanoidGame
 
 			for (auto it = visibleGameStates.rbegin(); it != visibleGameStates.rend(); ++it)
 			{
-				(*it)->DrawGameState(*this, window);
+				(*it)->draw(window);
 			}
 		}
 	}
 
-	void Game::PushGameState(EGameStateType stateType, bool isExclusivelyVisible)
+	void Game::pushGameState(EGameStateType stateType, bool isExclusivelyVisible)
 	{
 		this->pendingGameStateType = stateType;
 		this->pendingGameStateIsExclusivelyVisible = isExclusivelyVisible;
 		this->gameStateChangeType = EGameStateChangeType::Push;
 	}
 
-	void Game::PopGameState()
+	void Game::popGameState()
 	{
 		this->pendingGameStateType = EGameStateType::None;
 		this->pendingGameStateIsExclusivelyVisible = false;
 		this->gameStateChangeType = EGameStateChangeType::Pop;
 	}
 
-	void Game::SwitchGameState(EGameStateType newState)
+	void Game::switchGameState(EGameStateType newState)
 	{
 		this->pendingGameStateType = newState;
 		this->pendingGameStateIsExclusivelyVisible = false;

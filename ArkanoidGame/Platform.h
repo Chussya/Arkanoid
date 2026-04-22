@@ -21,7 +21,7 @@ namespace ArkanoidGame
 
 		// Setters
 
-		void setStartPosition(float screenWidth, float sreenHeight);
+		void setStartPosition();
 
 		// Interaction
 
@@ -32,7 +32,7 @@ namespace ArkanoidGame
 
 		// Standard methods
 
-		void init(const GameSettings& gameSettings);
+		void init();
 		void move(const float x);
 		void drawOnWindow(sf::RenderWindow& window);
 	};

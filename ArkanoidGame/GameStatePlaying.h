@@ -35,13 +35,13 @@ namespace ArkanoidGame
 		sf::Text pauseNote;
 
 	public:
-		GameStatePlayingData();
+		GameStatePlayingData() = default;
 
-		void HandleGameStateWindowEvent(Game& game, const sf::Event event);
+		void handleWindowEvent(const sf::Event event);
 
-		void InitGameState(Game& game);
-		void DrawGameState(Game& game, sf::RenderWindow& window);
-		void UpdateGameState(Game& game, float deltaTime);
-		void ShutdownGameState(Game& game);
+		void init();
+		void draw(sf::RenderWindow& window);
+		void update(float deltaTime);
+		void shutdown();
 	};
 }

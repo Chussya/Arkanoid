@@ -7,11 +7,61 @@
 
 namespace ArkanoidGame
 {
-	GameState::GameState(EGameStateType type, void* data, bool isExclusivelyVisible)
+	GameState::GameState() : type{ EGameStateType::None }, data{ nullptr }, isExclusivelyVisible{ false } {}
+	GameState::GameState(GameState&& state) { operator=(std::move(state)); }
+	GameState::GameState(EGameStateType type, bool isExclusivelyVisible) : type{type}, isExclusivelyVisible{ isExclusivelyVisible } {}
+
+	GameState::~GameState()
 	{
-		this->type = type;
-		this->data = data;
-		this->isExclusivelyVisible = isExclusivelyVisible;
+		switch (type)
+		{
+		case EGameStateType::MainMenu:
+		{
+			//ShutdownGameStateMainMenu(*(GameStateMainMenuData*)state.data, game);
+			//delete (GameStateMainMenuData*)state.data;
+			break;
+		}
+		case EGameStateType::Complexity:
+		{
+			//ShutdownGameStateComplexity(*(GameStateComplexityData*)state.data, game);
+			//delete (GameStateComplexityData*)state.data;
+			break;
+		}
+		case EGameStateType::Leaderboard:
+		{
+			//ShutdownGameStateLeaderboard(*(GameStateLeaderboardData*)state.data, game);
+			//delete (GameStateLeaderboardData*)state.data;
+			break;
+		}
+		case EGameStateType::Options:
+		{
+			//ShutdownGameStateOptions(*(GameStateOptionsData*)state.data, game);
+			//delete (GameStateOptionsData*)state.data;
+			break;
+		}
+		case EGameStateType::Playing:
+		{
+			delete ((GameStatePlayingData*)data);
+			break;
+		}
+		case EGameStateType::Pause:
+		{
+			//ShutdownGameStatePause(*(GameStatePauseData*)state.data, game);
+			//delete (GameStatePauseData*)state.data;
+			break;
+		}
+		case EGameStateType::GameOver:
+		{
+			//ShutdownGameStateGameOver(*(GameStateGameOverData*)state.data, game);
+			//delete (GameStateGameOverData*)state.data;
+			break;
+		}
+		default:
+			assert(false); // We want to know if we forgot to implement new game statee
+			break;
+		}
+
+		data = nullptr;
 	}
 
 	bool GameState::isVisible()
@@ -19,7 +69,7 @@ namespace ArkanoidGame
 		return isExclusivelyVisible;
 	}
 
-	void GameState::InitGameState(Game& game)
+	void GameState::init()
 	{
 		switch (type)
 		{
@@ -50,7 +100,7 @@ namespace ArkanoidGame
 		case EGameStateType::Playing:
 		{
 			data = new GameStatePlayingData();
-			((GameStatePlayingData*)data)->InitGameState(game);
+			((GameStatePlayingData*)data)->init();
 			break;
 		}
 		case EGameStateType::Pause:
@@ -71,61 +121,7 @@ namespace ArkanoidGame
 		}
 	}
 
-	void GameState::ShutdownGameState(Game& game)
-	{
-		switch (type)
-		{
-		case EGameStateType::MainMenu:
-		{
-			//ShutdownGameStateMainMenu(*(GameStateMainMenuData*)state.data, game);
-			//delete (GameStateMainMenuData*)state.data;
-			break;
-		}
-		case EGameStateType::Complexity:
-		{
-			//ShutdownGameStateComplexity(*(GameStateComplexityData*)state.data, game);
-			//delete (GameStateComplexityData*)state.data;
-			break;
-		}
-		case EGameStateType::Leaderboard:
-		{
-			//ShutdownGameStateLeaderboard(*(GameStateLeaderboardData*)state.data, game);
-			//delete (GameStateLeaderboardData*)state.data;
-			break;
-		}
-		case EGameStateType::Options:
-		{
-			//ShutdownGameStateOptions(*(GameStateOptionsData*)state.data, game);
-			//delete (GameStateOptionsData*)state.data;
-			break;
-		}
-		case EGameStateType::Playing:
-		{
-			((GameStatePlayingData*)data)->ShutdownGameState(game);
-			delete ((GameStatePlayingData*)data);
-			break;
-		}
-		case EGameStateType::Pause:
-		{
-			//ShutdownGameStatePause(*(GameStatePauseData*)state.data, game);
-			//delete (GameStatePauseData*)state.data;
-			break;
-		}
-		case EGameStateType::GameOver:
-		{
-			//ShutdownGameStateGameOver(*(GameStateGameOverData*)state.data, game);
-			//delete (GameStateGameOverData*)state.data;
-			break;
-		}
-		default:
-			assert(false); // We want to know if we forgot to implement new game statee
-			break;
-		}
-
-		data = nullptr;
-	}
-
-	void GameState::HandleWindowEventGameState(Game& game, sf::Event& event)
+	void GameState::handleWindowEvent(sf::Event& event)
 	{
 		switch (type)
 		{
@@ -151,7 +147,7 @@ namespace ArkanoidGame
 		}
 		case EGameStateType::Playing:
 		{
-			((GameStatePlayingData*)data)->HandleGameStateWindowEvent(game, event);
+			((GameStatePlayingData*)data)->handleWindowEvent(event);
 			break;
 		}
 		case EGameStateType::Pause:
@@ -170,7 +166,7 @@ namespace ArkanoidGame
 		}
 	}
 
-	void GameState::UpdateGameState(Game& game, float deltaTime)
+	void GameState::update(float deltaTime)
 	{
 		switch (type)
 		{
@@ -196,7 +192,7 @@ namespace ArkanoidGame
 		}
 		case EGameStateType::Playing:
 		{
-			((GameStatePlayingData*)data)->UpdateGameState(game, deltaTime);
+			((GameStatePlayingData*)data)->update(deltaTime);
 			break;
 		}
 		case EGameStateType::Pause:
@@ -215,7 +211,7 @@ namespace ArkanoidGame
 		}
 	}
 
-	void GameState::DrawGameState(Game& game, sf::RenderWindow& window)
+	void GameState::draw(sf::RenderWindow& window)
 	{
 		switch (type)
 		{
@@ -241,7 +237,7 @@ namespace ArkanoidGame
 		}
 		case EGameStateType::Playing:
 		{
-			((GameStatePlayingData*)data)->DrawGameState(game, window);
+			((GameStatePlayingData*)data)->draw(window);
 			break;
 		}
 		case EGameStateType::Pause:
