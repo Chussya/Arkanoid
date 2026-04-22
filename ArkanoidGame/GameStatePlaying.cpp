@@ -18,7 +18,7 @@ namespace ArkanoidGame
 		}
 		if (event.type == sf::Event::MouseMoved)
 		{
-			player.move(static_cast<float>(event.mouseMove.x));
+			mouseMoveX = static_cast<float>(event.mouseMove.x);
 		}
 	}
 
@@ -77,9 +77,13 @@ namespace ArkanoidGame
 	{
 		// Update scores:
 		//data.scoreText.setString("SCORES: " + std::to_string(data.numEatenApples));\
-		
+
+		// Check shell reflection
 		shell.reflection(player.getSize());
+
+		// Move game objects
 		shell.move(deltaTime);
+		player.move(mouseMoveX);
 	}
 
 	void GameStatePlayingData::ShutdownGameState(Game& game)

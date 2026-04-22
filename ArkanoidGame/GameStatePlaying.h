@@ -14,7 +14,7 @@ namespace ArkanoidGame
 	private:
 		// State data
 
-		bool isKeyPressed{ false };
+		float mouseMoveX{ 0.f };
 
 		// Game objects
 
