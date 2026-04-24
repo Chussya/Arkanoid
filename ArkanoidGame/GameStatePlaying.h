@@ -4,12 +4,13 @@
 
 #include "Shell.h"
 #include "Platform.h"
+#include "GameStateData.h"
 
 namespace ArkanoidGame
 {
 	class Game;
 
-	class GameStatePlayingData
+	class GameStatePlayingData : public GameStateData
 	{
 	private:
 		// State data
@@ -35,13 +36,12 @@ namespace ArkanoidGame
 		sf::Text pauseNote;
 
 	public:
-		GameStatePlayingData() = default;
+		GameStatePlayingData();
+		~GameStatePlayingData() = default;
 
-		void handleWindowEvent(const sf::Event event);
-
-		void init();
-		void draw(sf::RenderWindow& window);
-		void update(float deltaTime);
-		void shutdown();
+		void init() override;
+		void handleWindowEvent(const sf::Event& event) override;
+		void draw(sf::RenderWindow& window) override;
+		void update(float deltaTime) override;
 	};
 }

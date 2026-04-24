@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "GameStateData.h"
+
 namespace ArkanoidGame
 {
 	class Game;
@@ -31,16 +33,16 @@ namespace ArkanoidGame
 	class GameState
 	{
 	private:
-		EGameStateType type = EGameStateType::None;
-		void* data = nullptr;
-		bool isExclusivelyVisible = false;
+		EGameStateType type{ EGameStateType::None };
+		std::unique_ptr<GameStateData> data{ nullptr };
+		bool isExclusivelyVisible{ false };
 
 	public:
 		// Constructors and Destructor
 
-		GameState();
+		GameState() : type{ EGameStateType::None }, data{ nullptr }, isExclusivelyVisible{ false } {}
 		GameState(EGameStateType type, bool isExclusivelyVisible);
-		GameState(GameState&& state);
+		GameState(GameState&& state) noexcept { operator=(std::move(state)); }
 
 		GameState(const GameState&) = delete; // don't need copy constructor because of this class has pointer data (void*)
 
@@ -50,7 +52,7 @@ namespace ArkanoidGame
 
 		GameState& operator=(const GameState&) = delete;
 
-		GameState& operator= (GameState&& state) noexcept
+		GameState& operator=(GameState&& state) noexcept
 		{
 			type = state.type;
 			data = std::move(state.data);
@@ -63,7 +65,6 @@ namespace ArkanoidGame
 
 		bool isVisible();
 
-		void init();
 		void handleWindowEvent(sf::Event& event);
 		void update(float deltaTime);
 		void draw(sf::RenderWindow& window);

@@ -28,6 +28,7 @@ namespace ArkanoidGame
 		// Path
 
 		const std::string RESOURCES_PATH{ "Resources/" };
+		const std::string IMG_PATH{ "Images/" };
 
 		// Display
 

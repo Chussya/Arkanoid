@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "GameObject.h"
 #include "Vector2D.h"
 
 namespace ArkanoidGame
@@ -9,19 +10,13 @@ namespace ArkanoidGame
 	class Shell;
 	class GameSettings;
 
-	class Platform
+	class Platform : public GameObject
 	{
 	private:
-		Vector2Df pos;
-		sf::RectangleShape platform;
 
 	public:
-		Platform();
+		Platform(Vector2Df pos);
 		~Platform();
-
-		// Setters
-
-		void setStartPosition();
 
 		// Interaction
 
@@ -32,8 +27,6 @@ namespace ArkanoidGame
 
 		// Standard methods
 
-		void init();
-		void move(const float x);
-		void drawOnWindow(sf::RenderWindow& window);
+		void move(const float x) override;
 	};
 }

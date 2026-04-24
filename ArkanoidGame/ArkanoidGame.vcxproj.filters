@@ -40,6 +40,12 @@
     <ClCompile Include="GameSettings.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -70,6 +76,15 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateData.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -8,7 +8,12 @@
 
 namespace ArkanoidGame
 {
-	void GameStatePlayingData::handleWindowEvent(const sf::Event event)
+	GameStatePlayingData::GameStatePlayingData() :
+		shell(),
+		player{ { static_cast<float>(GAME_SETTINGS.SCREEN_WIDTH_GAME / 2), GAME_SETTINGS.SCREEN_HEIGHT_GAME - (GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT / 2) } }
+	{}
+
+	void GameStatePlayingData::handleWindowEvent(const sf::Event& event)
 	{
 		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 		{
@@ -44,14 +49,8 @@ namespace ArkanoidGame
 		//InitText(data.pauseNote, "For pause use [P]", data.font, sf::Color::White, 20);
 		//SetTextOrigin(data.pauseNote, ETextOrigin::RightTop);
 
-		/// Init platform
-
-		player.init();
-		player.setStartPosition();
-
 		/// Set shell:
 
-		shell.init();
 		shell.setSpeed(GAME_SETTINGS.getShellSpeed());
 
 		player.attachShell(shell);
@@ -83,11 +82,5 @@ namespace ArkanoidGame
 		// Move game objects
 		shell.move(deltaTime);
 		player.move(mouseMoveX);
-	}
-
-	void GameStatePlayingData::shutdown()
-	{
-		// Stop music
-		//game.music.stop();
 	}
 }

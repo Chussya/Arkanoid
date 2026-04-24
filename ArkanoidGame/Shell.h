@@ -4,12 +4,13 @@
 
 #include "Math.h"
 #include "Vector2D.h"
+#include "GameObject.h"
 
 namespace ArkanoidGame
 {
 	class GameSettings;
 
-	class Shell
+	class Shell : public GameObject
 	{
 	private:
 		enum class EShellState
@@ -20,12 +21,13 @@ namespace ArkanoidGame
 			Empty = 0
 		};
 
-	private:
 		// State of shell
 		Math::BitMask<EShellState> state;
 
 		// Speed of general vector of move
 		float speed;
+
+		float radius;
 
 		// Speed of vectors X and Y
 		Vector2Df vectorSpeed;
@@ -33,10 +35,6 @@ namespace ArkanoidGame
 		// Special pointer of platform's position when shell isn't striked
 		Vector2Df* ptrPlatformPos;
 
-		// Form of shell
-		sf::CircleShape shell;
-
-	private:
 		void attachToPlatform();
 
 	public:
@@ -57,8 +55,6 @@ namespace ArkanoidGame
 
 		// Standard methods
 
-		void init();
-		void move(const float deltaTime);
-		void drawOnWindow(sf::RenderWindow& window);
+		void move(const float deltaTime) override;
 	};
 }
