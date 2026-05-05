@@ -4,15 +4,15 @@
 
 namespace ArkanoidGame
 {
-	Application::Application(const std::string& gameName) : game(),
-		window(sf::VideoMode(GAME_SETTINGS.SCREEN_WIDTH_GAME, GAME_SETTINGS.SCREEN_HEIGHT_GAME), "Arkanoid")
+	Application::Application() : game(),
+		window(sf::VideoMode(GAME_SETTINGS.SCREEN_WIDTH_GAME, GAME_SETTINGS.SCREEN_HEIGHT_GAME), "Arkanoid Game")
 	{
 		// Init random number generator
 		unsigned int seed = (unsigned int)time(nullptr); // Get current time as seed. You can also use any other number to fix randomization
 		srand(seed);
 
 		window.setMouseCursorGrabbed(true);
-		window.setMouseCursorVisible(false);
+		//window.setMouseCursorVisible(false);
 	}
 
 	Application::~Application()
@@ -20,7 +20,12 @@ namespace ArkanoidGame
 		game.~Game();
 	}
 
-	void Application::Run()
+	Game& Application::getGame()
+	{
+		return game;
+	}
+
+	void Application::run()
 	{
 		// Init game clock
 		sf::Clock gameClock;
@@ -61,6 +66,13 @@ namespace ArkanoidGame
 				sf::sleep(sf::seconds(GAME_SETTINGS.TIME_PER_FRAME - deltaTime));
 			}
 		}
+	}
+
+	Application& Application::getInstance()
+	{
+		static Application instance;
+		
+		return instance;
 	}
 
 }

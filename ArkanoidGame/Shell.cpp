@@ -1,28 +1,19 @@
 #include "Shell.h"
 
 #include "GameSettings.h"
+#include <cassert>
 
 namespace ArkanoidGame
 {
-	// Private
-
-	void Shell::attachToPlatform()
-	{
-		sprite.setPosition({ ptrPlatformPos->x, ptrPlatformPos->y - GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT });
-
-		vectorSpeed.x = 0;
-		vectorSpeed.y = 0;
-	}
-
-	// Public
+	/// Public
 
 	Shell::Shell() :
 		state{ EShellState::Empty },
-		ptrPlatformPos{ nullptr },
+		platformData{ nullptr, nullptr },
 		speed{ 0.f },
+		Collidable(Collidable::ECollisionShape::Circle),
 		GameObject(GAME_SETTINGS.RESOURCES_PATH + GAME_SETTINGS.IMG_PATH + "shell.png", { 0.f, 0.f }, GAME_SETTINGS.BALL_RADIUS_DEFAULT * 2, GAME_SETTINGS.BALL_RADIUS_DEFAULT * 2)
 	{
-		radius = GAME_SETTINGS.BALL_RADIUS_DEFAULT;
 		setSpriteOrigin(0.5f, 0.5f);
 	}
 
@@ -33,68 +24,109 @@ namespace ArkanoidGame
 		this->speed = speed;
 	}
 
-	bool Shell::isActive()
+	void Shell::setPlatformData(const PlatformData platformData)
 	{
-		return !state.IsBitMaskOn(EShellState::Fallen) && state.IsBitMaskOn(EShellState::Striked);
+		this->platformData = platformData;
 	}
 
-	bool Shell::isStriked()
+	bool Shell::checkState(const EShellState state)
 	{
-		return state.IsBitMaskOn(EShellState::Striked);
+		return this->state.IsBitMaskOn(state);
+	}
+
+	void Shell::invertX()
+	{
+		vectorSpeed.x *= -1;
+	}
+
+	void Shell::invertY()
+	{
+		vectorSpeed.y *= -1;
 	}
 
 	void Shell::strike()
 	{
-		state.TurnOnMask(EShellState::Striked);
+		state.SetMask(EShellState::Striked);
 		vectorSpeed.y = -speed;
-	}
 
-	void Shell::reflection(const Vector2Df& platformSize)
-	{
-		if (isStriked())
+		if (getPosition().x - (getRect().width / 2) <= 0)
 		{
-			// Side reflection
-			if (sprite.getPosition().x - radius <= 0.f || sprite.getPosition().x + radius >= GAME_SETTINGS.SCREEN_WIDTH_GAME)
-			{
-				vectorSpeed.x = -vectorSpeed.x;
-			}
-			// ceil reflection
-			if (sprite.getPosition().y - radius <= 0.f)
-			{
-				vectorSpeed.y = -vectorSpeed.y;
-			}
-			// platform reflection
-			else if (ArkanoidGame::Math::isCircleCollideRect(convert<Vector2Df>(sprite.getPosition()), radius, *ptrPlatformPos, platformSize.x, platformSize.y))
-			{
-				vectorSpeed.x = speed * ((sprite.getPosition().x - ptrPlatformPos->x) / (platformSize.x / 2));
-				vectorSpeed.y = -vectorSpeed.y;
-			}
-			// Shell fell
-			else if (sprite.getPosition().y + radius >= GAME_SETTINGS.SCREEN_HEIGHT_GAME)
-			{
-				state.TurnOffMask(EShellState::Striked);
-				attachToPlatform();
-			}
+			sprite.setPosition({ getPosition().x + (getRect().width / 2) + 1.f, getPosition().y });
+		} else if (getPosition().x + (getRect().width / 2) >= GAME_SETTINGS.SCREEN_WIDTH_GAME)
+		{
+			sprite.setPosition({ getPosition().x - (getRect().width / 2) - 1.f, getPosition().y });
 		}
 	}
 
-	void Shell::memorisePlatformPos(Vector2Df& pos)
+	void Shell::collidePlatform(ECollisionSide collision)
 	{
-		ptrPlatformPos = &pos;
-		attachToPlatform();
+		vectorSpeed.x = speed * ((sprite.getPosition().x - platformData.ptrPos->x) / (*platformData.ptrWidth / 2));
+
+		setCollisionSide(collision);
 	}
 
-	void Shell::move(const float deltaTime)
+	void Shell::attachToPlatform()
+	{
+		sprite.setPosition({ platformData.ptrPos->x, platformData.ptrPos->y - GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT });
+		state.SetMask(EShellState::Empty);
+
+		vectorSpeed.x = 0;
+		vectorSpeed.y = 0;
+	}
+
+	void Shell::addState(const EShellState& state)
+	{
+		this->state.AddMask(state);
+	}
+
+	void Shell::update(const float deltaTime)
 	{
 		if (state.IsBitMaskOn(EShellState::Striked))
 		{
-			if (!state.IsBitMaskOn(EShellState::Fallen))
+			sprite.setPosition(sprite.getPosition().x + vectorSpeed.x * deltaTime, sprite.getPosition().y + vectorSpeed.y * deltaTime);
+
+			if (getRect().top <= 0.f)
 			{
-				sprite.setPosition(sprite.getPosition().x + vectorSpeed.x * deltaTime, sprite.getPosition().y + vectorSpeed.y * deltaTime);
+				invertY();
+			} else if (getRect().left <= 0.f || getRect().left + getRect().width >= GAME_SETTINGS.SCREEN_WIDTH_GAME)
+			{
+				invertX();
+			} else if (getRect().top + getRect().height >= GAME_SETTINGS.SCREEN_HEIGHT_GAME)
+			{
+				state.SetMask(EShellState::Fallen);
 			}
 		} else
 		{
-			sprite.setPosition({ ptrPlatformPos->x, sprite.getPosition().y });
+			sprite.setPosition({ platformData.ptrPos->x, sprite.getPosition().y });
 		}
+	}
+
+	void Shell::onHit()
+	{
+		if (state.IsBitMaskOn(EShellState::Striked))
+		{
+			if (getCollisionSide() == ECollisionSide::Right || getCollisionSide() == ECollisionSide::Left)
+			{
+				invertX();
+			} else if (getCollisionSide() == ECollisionSide::Top || getCollisionSide() == ECollisionSide::Bottom)
+			{
+				invertY();
+			}  else if (getCollisionSide() == ECollisionSide::Angle)
+			{
+				invertX();
+				invertY();
+			}
+			setCollisionSide(ECollisionSide::Empty);
+		} else if (state.IsBitMaskOn(EShellState::Fallen))
+		{
+
+		}
+	}
+
+	bool Shell::isCollide(std::shared_ptr<Collidable> collidable)
+	{
+		auto gameObject = std::dynamic_pointer_cast<GameObject>(collidable);
+		assert(gameObject);
+		return getRect().intersects(gameObject->getRect());
 	}
 }

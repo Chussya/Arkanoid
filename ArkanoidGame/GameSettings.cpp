@@ -17,6 +17,11 @@ namespace ArkanoidGame
 		return shellSpeed;
 	}
 
+	float GameSettings::getFadeSpeed()
+	{
+		return fadeSpeed;
+	}
+
 	std::string GameSettings::getPlayerName()
 	{
 		return playerName;

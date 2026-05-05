@@ -4,6 +4,8 @@
 
 #include "Game.h"
 #include "GameStatePlaying.h"
+#include "GameStateMainMenu.h"
+#include "GameStatePause.h"
 
 namespace ArkanoidGame
 {
@@ -13,8 +15,7 @@ namespace ArkanoidGame
 		{
 		case EGameStateType::MainMenu:
 		{
-			//state.data = new GameStateMainMenuData();
-			//InitGameStateMainMenu(*(GameStateMainMenuData*)state.data, game);
+			data = std::make_unique<GameStateMainMenuData>();
 			break;
 		}
 		case EGameStateType::Complexity:
@@ -41,8 +42,7 @@ namespace ArkanoidGame
 		}
 		case EGameStateType::Pause:
 		{
-			//state.data = new GameStatePauseData();
-			//InitGameStatePause(*(GameStatePauseData*)state.data, game);
+			data = std::make_unique<GameStatePauseData>();
 			break;
 		}
 		case EGameStateType::GameOver:

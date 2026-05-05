@@ -11,15 +11,19 @@ namespace ArkanoidGame
 	protected:
 		sf::Sprite sprite;
 		sf::Texture texture;
-		Vector2Df pos;
 
 	public:
 		GameObject(const std::string& textureId, const Vector2Df& position, float width, float height);
 		virtual ~GameObject() = default;
 
+		// Getters
+
+		virtual Vector2Df getPosition() const;
+		virtual sf::FloatRect getRect() const;
+
 		// Standard virtual methods
 
-		virtual void move(const float) = 0;
+		virtual void update(const float) = 0;
 		virtual void drawOnWindow(sf::RenderWindow&);
 
 		// General methods

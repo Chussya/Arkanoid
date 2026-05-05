@@ -2,14 +2,6 @@
 
 #include <cassert>
 
-//#include "Record.h"
-//#include "GameStateMainMenu.h"
-//#include "GameStateLeaderboard.h"
-//#include "GameStateOptions.h"
-//#include "GameStateComplexity.h"
-//#include "GameStatePause.h"
-//#include "GameStateGameOver.h"
-
 namespace ArkanoidGame
 {
 	Game::Game()
@@ -17,8 +9,8 @@ namespace ArkanoidGame
 		gameStateChangeType = EGameStateChangeType::None;
 		pendingGameStateType = EGameStateType::None;
 		pendingGameStateIsExclusivelyVisible = false;
-		//SwitchGameState(EGameStateType::MainMenu);
-		switchGameState(EGameStateType::Playing);
+
+		switchGameState(EGameStateType::MainMenu);
 	}
 
 	Game::~Game()

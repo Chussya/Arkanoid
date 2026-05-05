@@ -6,6 +6,7 @@ namespace ArkanoidGame
 	class Math
 	{
 	public:
+		const float PI{ 3.14159f };
 
 		template <class Enum>
 		class BitMask
@@ -14,27 +15,23 @@ namespace ArkanoidGame
 			int mask;
 
 		public:
-			BitMask(Enum defaultMask)
-			{
-				mask = static_cast<int>(defaultMask);
-			}
+			BitMask(Enum mask) : mask { static_cast<int>(mask) } {}
 
-			void TurnOnMask(Enum flag)
+			// Turn on mask without other changes
+			void AddMask(Enum flag)
 			{
 				mask |= static_cast<int>(flag);
 			}
 
-			void TurnOffMask(Enum flag)
+			// Turn off mask without other changes
+			void DeleteMask(Enum flag)
 			{
 				mask &= ~static_cast<int>(flag);
 			}
 
-			void UpdateBitMask(Enum newMask)
+			void SetMask(Enum mask)
 			{
-				int newMaskInt = static_cast<int>(newMask);
-				mask & newMaskInt ?
-					mask &= ~newMaskInt :
-					mask |= newMaskInt;
+				this->mask = static_cast<int>(mask);
 			}
 
 			bool IsBitMaskOn(Enum checkMask)
@@ -42,7 +39,5 @@ namespace ArkanoidGame
 				return mask & static_cast<int>(checkMask);
 			}
 		};
-
-		static bool isCircleCollideRect(Vector2Df circlePos, float circleRad, Vector2Df rectPos, float rectWidth, float rectHeight);
 	};
 }

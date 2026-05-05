@@ -6,7 +6,9 @@
 
 namespace ArkanoidGame
 {
-	GameObject::GameObject(const std::string& texturePath, const Vector2Df& position, float width, float height) : pos(position)
+	// Public
+
+	GameObject::GameObject(const std::string& texturePath, const Vector2Df& position, float width, float height)
 	{
 		assert(texture.loadFromFile(texturePath));
 
@@ -17,6 +19,16 @@ namespace ArkanoidGame
 	void GameObject::drawOnWindow(sf::RenderWindow& window)
 	{
 		Util::UGraphic::drawSprite(sprite, window);
+	}
+
+	Vector2Df GameObject::getPosition() const
+	{
+		return convert<Vector2Df>(sprite.getPosition());
+	}
+
+	sf::FloatRect GameObject::getRect() const
+	{
+		return sprite.getGlobalBounds();
 	}
 
 	void GameObject::setSpriteOrigin(float originX, float originY)

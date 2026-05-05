@@ -46,6 +46,15 @@
     <ClCompile Include="Util.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="GameStateMainMenu.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStatePause.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Brick.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -85,6 +94,18 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateMainMenu.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStatePause.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Brick.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Collidable.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

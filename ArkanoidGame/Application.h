@@ -11,12 +11,25 @@ namespace ArkanoidGame
 		sf::RenderWindow window;
 
 	public:
+		// Constructors & Desctructors
+
 		Application(const Application&) = delete;
 
-		Application(const std::string& gameName);
+		Application();
 		~Application();
 
-		void Run();
+		// Getters
+
+		Game& getGame();
+
+		// Other methods
+
+		void run();
+
+	public:
+		// Static methods
+
+		static Application& getInstance();
 	};
 
 }

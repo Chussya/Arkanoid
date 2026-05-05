@@ -8,8 +8,7 @@ using namespace ArkanoidGame;
 
 int main()
 {
-	Application app("ArkanoidGame");
-	app.Run();
+	Application::getInstance().run();
 
 	return 0;
 }

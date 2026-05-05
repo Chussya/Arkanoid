@@ -1,32 +1,35 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
 #include "GameObject.h"
-#include "Vector2D.h"
+#include "Collidable.h"
 
 namespace ArkanoidGame
 {
 	class Shell;
 	class GameSettings;
 
-	class Platform : public GameObject
+	class Platform : public GameObject, public Collidable
 	{
 	private:
+		float width{ 0.f };
+		Vector2Df pos{ 0.f, 0.f };
 
 	public:
 		Platform(Vector2Df pos);
 		~Platform();
 
-		// Interaction
-
-		Vector2Df getSize();
+		/// Interaction
 
 		void attachShell(Shell& shell);
-		void strikeShell(Shell& shell);
+		void strikeShell(std::shared_ptr<Shell> shell);
 
-		// Standard methods
+		/// Inherited via GameObject
 
-		void move(const float x) override;
+		void update(const float x) override;
+
+		/// Inherited via Collidable
+
+		bool checkCollision(std::shared_ptr<Collidable> collidable) override;
+		bool isCollide(std::shared_ptr<Collidable> collidable) override;
 	};
 }
