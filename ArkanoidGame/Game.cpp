@@ -6,9 +6,17 @@ namespace ArkanoidGame
 {
 	Game::Game()
 	{
+		// Generate fake records table
+		playerRecord = { GAME_SETTINGS.PLAYER_NAME_DEFAULT, 0 };
+		records = { {playerRecord.first, playerRecord.second} };
+
 		gameStateChangeType = EGameStateChangeType::None;
 		pendingGameStateType = EGameStateType::None;
 		pendingGameStateIsExclusivelyVisible = false;
+
+		audio.loadSoundBuffer(AudioManager::ESoundEffect::Hit, GAME_SETTINGS.SOUND_PATH + "hit.wav");
+		audio.loadSoundBuffer(AudioManager::ESoundEffect::Death, GAME_SETTINGS.SOUND_PATH + "death.wav");
+		audio.loadSoundBuffer(AudioManager::ESoundEffect::Victory, GAME_SETTINGS.SOUND_PATH + "victory.wav");
 
 		switchGameState(EGameStateType::MainMenu);
 	}
@@ -24,6 +32,62 @@ namespace ArkanoidGame
 		gameStateChangeType = EGameStateChangeType::None;
 		pendingGameStateType = EGameStateType::None;
 		pendingGameStateIsExclusivelyVisible = false;
+
+		records.clear();
+	}
+
+	void Game::setPlayerRecord(Record record)
+	{
+		playerRecord = record;
+	}
+
+	Record Game::getPlayerRecord()
+	{
+		return playerRecord;
+	}
+
+	RecordsMap Game::getRecords()
+	{
+		return records;
+	}
+
+	AudioManager& Game::getAudio()
+	{
+		return audio;
+	}
+
+	RecordsVector Game::getSortedRecords()
+	{
+		RecordsVector vRecords(records.begin(), records.end());
+
+		std::sort(vRecords.begin(), vRecords.end(), [](std::pair<std::string, int> record1, std::pair<std::string, int> record2) { return record1.second > record2.second; });
+
+		return vRecords;
+	}
+
+	void Game::updateRecords(Record record)
+	{
+		if (records.size() == 0 && records.begin()->second == 0)
+		{
+			records.clear();
+			records.insert({ record.first, record.second });
+		} else
+		{
+			auto foundIt = records.find(record.first);
+
+			if (foundIt != records.end())
+			{
+				records[record.first] = record.second;
+			} else
+			{
+				records.insert({ record.first, record.second });
+			}
+		}
+	}
+
+	void Game::restartPlayerScore()
+	{
+		playerRecord.second = 0;
 	}
 
 	void Game::handleWindowEvents(sf::RenderWindow& window)

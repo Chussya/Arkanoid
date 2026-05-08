@@ -9,6 +9,16 @@
 
 namespace ArkanoidGame
 {
+	GameStatePlayingData::GameStatePlayingData()
+	{
+		score = Application::getInstance().getGame().getPlayerRecord().second;
+	}
+
+	GameStatePlayingData::~GameStatePlayingData()
+	{
+		Application::getInstance().getGame().setPlayerRecord({ Application::getInstance().getGame().getPlayerRecord().first, score });
+	}
+
 	void GameStatePlayingData::handleWindowEvent(const sf::Event& event)
 	{
 		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
@@ -39,24 +49,11 @@ namespace ArkanoidGame
 		// Init fonts
 		assert(font.loadFromFile(GAME_SETTINGS.RESOURCES_PATH + "Fonts/arial.ttf"));
 
-		/// Init textures
-		//assert(data.appleTexture.loadFromFile(RESOURCES_PATH + "Images/apple.png"));
+		// Init texts
+		Util::UGraphic::initText(scoreText, "SCORES: " + std::to_string(score), font, sf::Color::White, 20);
 
-		/// Init music
-		//assert(game.music.openFromFile(RESOURCES_PATH + "Music/play.ogg"));
-
-		//// Music settings
-		//game.music.setLoop(true);
-		//game.music.setVolume(game.gameSettings.musicLoud);
-
-		//// Play
-		//game.music.play();
-
-		//// Init texts
-		//InitText(data.scoreText, "SCORES:", data.font, sf::Color::White, 20);
-
-		//InitText(data.pauseNote, "For pause use [P]", data.font, sf::Color::White, 20);
-		//SetTextOrigin(data.pauseNote, ETextOrigin::RightTop);
+		Util::UGraphic::initText(pauseNote, "For pause use [P]", font, sf::Color::White, 20);
+		Util::UGraphic::setItemOrigin(pauseNote, 1.f, 0.f);
 
 		/// Set shell:
 
@@ -70,8 +67,6 @@ namespace ArkanoidGame
 		gameObjects.emplace_back(shell);
 
 		createBlocks(GAME_SETTINGS.BRICKS_COUNT - 2);
-
-		//game.ptrPlayerScores = &data.numEatenApples;
 	}
 
 	void GameStatePlayingData::draw(sf::RenderWindow& window)
@@ -95,7 +90,7 @@ namespace ArkanoidGame
 	void GameStatePlayingData::update(float deltaTime)
 	{
 		// Update scores:
-		//data.scoreText.setString("SCORES: " + std::to_string(data.numEatenApples));
+		scoreText.setString("SCORES: " + std::to_string(score));
 		
 		std::shared_ptr <Platform> ptrPlayer = std::dynamic_pointer_cast<Platform>(gameObjects[0]);
 		std::shared_ptr<Shell> ptrShell = std::dynamic_pointer_cast<Shell>(gameObjects[1]);
@@ -110,8 +105,15 @@ namespace ArkanoidGame
 			brick->update(deltaTime);
 		}
 
+		auto aliveBricks = std::count_if(bricks.begin(), bricks.end(), [](std::shared_ptr<Brick> b) { return b->isAlive(); });
+
+		if (aliveBricks == 0)
+		{
+			Application::getInstance().getGame().pushGameState(EGameStateType::Victory, false);
+			Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Victory);
+		}
 		// Check shell reflection
-		if (ptrShell->checkState(Shell::EShellState::Striked))
+		else if (ptrShell->checkState(Shell::EShellState::Striked))
 		{
 			// Platform reflection
 			ptrPlayer->checkCollision(ptrShell);
@@ -119,25 +121,32 @@ namespace ArkanoidGame
 			// Bricks reflection
 			for (auto& brick : bricks)
 			{
-				if (!brick->isHit() && brick->checkCollision(ptrShell))
+				if (brick->isAlive() && brick->checkCollision(ptrShell))
 				{
+					++score;
+
+					soundHit.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Hit));
+					soundHit.setVolume(GAME_SETTINGS.getSoundVolume());
+					soundHit.play();
+
 					break;
 				}
 			}
 		} else if (ptrShell->checkState(Shell::EShellState::Fallen))
 		{
-			ptrPlayer->attachShell(*ptrShell);
+			Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Death);
+			Application::getInstance().getGame().switchGameState(EGameStateType::GameOver);
 		}
 	}
 
 	void GameStatePlayingData::createBlocks(const int count)
 	{
-		Vector2Df pos = { 0.f, 200.f };
+		Vector2Df pos = { 40.f, 200.f };
 
 		for (int i = 0; i < count; ++i)
 		{
 			bricks.emplace_back(std::make_shared<Brick>(Brick(pos)));
-			pos.x += GAME_SETTINGS.BRICK_WIDTH_DEFAULT + 10;
+			pos.x += GAME_SETTINGS.BRICK_WIDTH_DEFAULT + 10.f;
 		}
 	}
 }

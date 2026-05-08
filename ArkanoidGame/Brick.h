@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math.h"
 #include "Collidable.h"
 #include "GameObject.h"
 
@@ -10,9 +11,18 @@ namespace ArkanoidGame
 
 	class Brick : public GameObject, public Collidable
 	{
+	public:
+		enum class EBrickState
+		{
+			Disappearing = 1,
+			Disappeared = 2,
+
+			Empty = 0
+		};
+
 	private:
+		Math::BitMask<EBrickState> state;
 		const float fadeSpeed{ 0.f };
-		bool hit{ false };
 
 	public:
 		Brick(Vector2Df pos);
@@ -20,7 +30,7 @@ namespace ArkanoidGame
 
 		/// Interaction
 
-		bool isHit();
+		bool isAlive();
 
 		/// Inherited via GameObject
 

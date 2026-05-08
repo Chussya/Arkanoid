@@ -7,6 +7,7 @@
 namespace ArkanoidGame
 {
 	Brick::Brick(Vector2Df pos) :
+		state{ EBrickState::Empty },
 		fadeSpeed{ GAME_SETTINGS.getFadeSpeed() },
 		Collidable(Collidable::ECollisionShape::Rectangle),
 		GameObject(GAME_SETTINGS.RESOURCES_PATH + GAME_SETTINGS.IMG_PATH + "brick.png", pos, GAME_SETTINGS.BRICK_WIDTH_DEFAULT, GAME_SETTINGS.BRICK_HEIGHT_DEFAULT)
@@ -14,14 +15,14 @@ namespace ArkanoidGame
 		setSpriteOrigin(0.f, 0.f);
 	}
 
-	bool Brick::isHit()
+	bool Brick::isAlive()
 	{
-		return hit;
+		return !state.IsBitMaskOn(EBrickState::Disappearing) && !state.IsBitMaskOn(EBrickState::Disappeared);
 	}
 
 	void Brick::update(const float deltaTime)
 	{
-		if (hit)
+		if (state.IsBitMaskOn(EBrickState::Disappearing))
 		{
 			float alpha = sprite.getColor().a;
 
@@ -32,6 +33,7 @@ namespace ArkanoidGame
 				if (alpha < 0)
 				{
 					alpha = 0;
+					state.SetMask(EBrickState::Disappeared);
 				}
 				sprite.setColor(sf::Color(sprite.getColor().r, sprite.getColor().g, sprite.getColor().b, static_cast<sf::Uint8>(alpha)));
 			}
@@ -49,6 +51,8 @@ namespace ArkanoidGame
 
 		if (isIntersected)
 		{
+			state.SetMask(EBrickState::Disappearing);
+
 			float intersectionCenterX{ intersection.left + (intersection.width / 2) };
 			float intersectionCenterY{ intersection.top + (intersection.height / 2) };
 

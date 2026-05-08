@@ -3,7 +3,6 @@
 #include <cassert>
 
 #include "Util.h"
-#include "MenuItem.h"
 #include "Application.h"
 #include "GameSettings.h"
 

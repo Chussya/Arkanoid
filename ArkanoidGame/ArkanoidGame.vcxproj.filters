@@ -55,6 +55,21 @@
     <ClCompile Include="Brick.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="GameStateLeaderboard.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateOptions.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateGameOver.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateVictory.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -106,6 +121,24 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Collidable.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateLeaderboard.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Record.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateOptions.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateGameOver.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateVictory.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioManager.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,7 +16,7 @@ namespace ArkanoidGame
 		Application(const Application&) = delete;
 
 		Application();
-		~Application();
+		~Application() = default;;
 
 		// Getters
 

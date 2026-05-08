@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "Brick.h"
 #include "Shell.h"
@@ -16,6 +17,7 @@ namespace ArkanoidGame
 	private:
 		// State data
 
+		int score{ 0 };
 		float mouseMoveX{ 0.f };
 
 		// Game objects
@@ -34,8 +36,13 @@ namespace ArkanoidGame
 		sf::Text scoreText;
 		sf::Text pauseNote;
 
+		// Sounds
+
+		sf::Sound soundHit;
+
 	public:
-		~GameStatePlayingData() = default;
+		GameStatePlayingData();
+		~GameStatePlayingData();
 
 		// GameStateData methods
 

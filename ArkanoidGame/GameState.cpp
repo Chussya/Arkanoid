@@ -6,6 +6,10 @@
 #include "GameStatePlaying.h"
 #include "GameStateMainMenu.h"
 #include "GameStatePause.h"
+#include "GameStateLeaderboard.h"
+#include "GameStateOptions.h"
+#include "GameStateVictory.h"
+#include "GameStateGameOver.h"
 
 namespace ArkanoidGame
 {
@@ -18,21 +22,14 @@ namespace ArkanoidGame
 			data = std::make_unique<GameStateMainMenuData>();
 			break;
 		}
-		case EGameStateType::Complexity:
-		{
-			//state.data = new GameStateComplexityData();
-			//InitGameStateComplexity(*(GameStateComplexityData*)state.data, game);
-			break;
-		}
 		case EGameStateType::Leaderboard:
 		{
-			//state.data = new GameStateLeaderboardData();
-			//InitGameStateLeaderboard(*(GameStateLeaderboardData*)state.data, game);
+			data = std::make_unique<GameStateLeaderboardData>();
 			break;
 		}
 		case EGameStateType::Options:
 		{
-			//data = std::make_unique<GameStateOptionsData>();
+			data = std::make_unique<GameStateOptionsData>();
 			break;
 		}
 		case EGameStateType::Playing:
@@ -45,14 +42,18 @@ namespace ArkanoidGame
 			data = std::make_unique<GameStatePauseData>();
 			break;
 		}
+		case EGameStateType::Victory:
+		{
+			data = std::make_unique<GameStateVictoryData>();
+			break;
+		}
 		case EGameStateType::GameOver:
 		{
-			//state.data = new GameStateGameOverData();
-			//InitGameStateGameOver(*(GameStateGameOverData*)state.data, game);
+			data = std::make_unique<GameStateGameOverData>();
 			break;
 		}
 		default:
-			assert(false); // We want to know if we forgot to implement new game statee
+			assert(false);
 			break;
 		}
 		if (data)

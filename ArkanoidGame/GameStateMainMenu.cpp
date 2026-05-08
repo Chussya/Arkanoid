@@ -37,6 +37,14 @@ namespace ArkanoidGame
 
 	void GameStateMainMenuData::init()
 	{
+		// Init music
+		if (!Application::getInstance().getGame().getAudio().isMusicPlaying())
+		{
+			Application::getInstance().getGame().getAudio().loadMusic(GAME_SETTINGS.MUSIC_PATH + "Menu.ogg");
+			Application::getInstance().getGame().getAudio().setMusicVolume(GAME_SETTINGS.getMusicVolume());
+			Application::getInstance().getGame().getAudio().playMusic();
+		}
+
 		// Init Fonts
 
 		assert(font.loadFromFile(GAME_SETTINGS.RESOURCES_PATH + "Fonts/Roboto-Light.ttf"));
@@ -54,19 +62,13 @@ namespace ArkanoidGame
 			"Start game",
 			font,
 			40,
-			[]() { Application::getInstance().getGame().switchGameState(ArkanoidGame::EGameStateType::Playing); }
+			[]()
+			{
+				Application::getInstance().getGame().getAudio().stopMusic();
+				Application::getInstance().getGame().switchGameState(ArkanoidGame::EGameStateType::Playing);
+			}
 		);
 		startGame.setItemOrigin(0.5f, 0.5f);
-
-		MenuItem<call> complexity;
-
-		complexity.initMenuItem(
-			"Complexity",
-			font,
-			40,
-			[]() { Application::getInstance().getGame().switchGameState(EGameStateType::Complexity); }
-		);
-		complexity.setItemOrigin(0.5f, 0.5f);
 
 		MenuItem<call> leaderboard;
 
@@ -94,12 +96,15 @@ namespace ArkanoidGame
 			"Exit",
 			font,
 			40,
-			[]() { Application::getInstance().getGame().switchGameState(EGameStateType::Exit); }
+			[]()
+			{
+				Application::getInstance().getGame().getAudio().stopMusic();
+				Application::getInstance().getGame().switchGameState(EGameStateType::Exit);
+			}
 		);
 		exit.setItemOrigin(0.5f, 0.5f);
 
 		buttons.push_back(startGame);
-		buttons.push_back(complexity);
 		buttons.push_back(leaderboard);
 		buttons.push_back(options);
 		buttons.push_back(exit);

@@ -8,16 +8,12 @@ namespace ArkanoidGame
 		window(sf::VideoMode(GAME_SETTINGS.SCREEN_WIDTH_GAME, GAME_SETTINGS.SCREEN_HEIGHT_GAME), "Arkanoid Game")
 	{
 		// Init random number generator
-		unsigned int seed = (unsigned int)time(nullptr); // Get current time as seed. You can also use any other number to fix randomization
+
+		unsigned int seed = (unsigned int)time(nullptr);
 		srand(seed);
 
 		window.setMouseCursorGrabbed(true);
-		//window.setMouseCursorVisible(false);
-	}
-
-	Application::~Application()
-	{
-		game.~Game();
+		window.setMouseCursorVisible(false);
 	}
 
 	Game& Application::getGame()
@@ -28,6 +24,7 @@ namespace ArkanoidGame
 	void Application::run()
 	{
 		// Init game clock
+
 		sf::Clock gameClock;
 
 		// Game loop

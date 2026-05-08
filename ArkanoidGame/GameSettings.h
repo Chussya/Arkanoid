@@ -12,17 +12,16 @@ namespace ArkanoidGame
 
 		// Music
 
-		float soundLoud{ 20.f };
-		float musicLoud{ 20.f };
+		const float MAX_SOUND_VOLUME{ 20.f };
+		const float MAX_MUSIC_VOLUME{ 20.f };
+
+		float soundVolume{ MAX_SOUND_VOLUME };
+		float musicVolume{ MAX_MUSIC_VOLUME };
 
 		// Game physix
 
 		float shellSpeed{ 400.f };
 		float fadeSpeed{ 100.f };
-
-		// Other
-
-		std::string playerName{ PLAYER_NAME_DEFAULT };
 
 	public:
 		// Constants
@@ -30,6 +29,8 @@ namespace ArkanoidGame
 
 		const std::string RESOURCES_PATH{ "Resources/" };
 		const std::string IMG_PATH{ "Images/" };
+		const std::string SOUND_PATH{ RESOURCES_PATH + "Audio/Sounds/" };
+		const std::string MUSIC_PATH{ RESOURCES_PATH + "Audio/Music/" };
 
 		// Display
 
@@ -38,6 +39,8 @@ namespace ArkanoidGame
 		const int SCREEN_HEIGHT_GAME{ 600 };
 		const int SCREEN_WIDTH_EDIT{ 300 };
 		const int SCREEN_HEIGHT_EDIT{ 100 };
+		const int SCREEN_WIDTH_POPUP{ 500 };
+		const int SCREEN_HEIGHT_POPUP{ 300 };
 
 		// Game
 
@@ -58,7 +61,7 @@ namespace ArkanoidGame
 		const int PLAYER_NAME_LENGTH{ 25 };
 
 		// Single instance of game settings
-		static GameSettings& Instance()
+		static GameSettings& getInstance()
 		{
 			static GameSettings gameSettings;
 			return gameSettings;
@@ -66,19 +69,17 @@ namespace ArkanoidGame
 
 		// Getters
 
-		float getSoundLoud();
-		float getMusicLoud();
+		float getSoundVolume();
+		float getMusicVolume();
 		float getShellSpeed();
 		float getFadeSpeed();
-		std::string getPlayerName();
 
 		// Setters
 
 		void setSoundLoud(float soundLoud);
 		void setMusicLoud(float musicLoud);
 		void setShellSpeed(float shellSpeed);
-		void setPlayerName(std::string playerName);
 	};
 }
 
-#define GAME_SETTINGS GameSettings::Instance()
+#define GAME_SETTINGS GameSettings::getInstance()

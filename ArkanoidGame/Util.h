@@ -15,6 +15,13 @@ namespace ArkanoidGame
 	class Util
 	{
 	public:
+		class UString
+		{
+		public:
+			static std::string stringFormat(std::string s1, std::string s2, const char sym, const size_t length);
+			static std::string stringCenter(std::string s, const char sym, const size_t length);
+		};
+
 		class UGraphic
 		{
 		public:

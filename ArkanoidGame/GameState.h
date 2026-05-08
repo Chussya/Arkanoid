@@ -12,8 +12,8 @@ namespace ArkanoidGame
 	{
 		None = 0,
 		Playing,
-		Complexity,
 		GameOver,
+		Victory,
 		Leaderboard,
 		MainMenu,
 		Options,
@@ -44,7 +44,7 @@ namespace ArkanoidGame
 		GameState(EGameStateType type, bool isExclusivelyVisible);
 		GameState(GameState&& state) noexcept { operator=(std::move(state)); }
 
-		GameState(const GameState&) = delete; // don't need copy constructor because of this class has pointer data (void*)
+		GameState(const GameState&) = delete;
 
 		~GameState();
 

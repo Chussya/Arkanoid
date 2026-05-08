@@ -2,14 +2,14 @@
 
 namespace ArkanoidGame
 {
-	float GameSettings::getSoundLoud()
+	float GameSettings::getSoundVolume()
 	{
-		return soundLoud;
+		return soundVolume;
 	}
 
-	float GameSettings::getMusicLoud()
+	float GameSettings::getMusicVolume()
 	{
-		return musicLoud;
+		return musicVolume;
 	}
 
 	float GameSettings::getShellSpeed()
@@ -22,28 +22,18 @@ namespace ArkanoidGame
 		return fadeSpeed;
 	}
 
-	std::string GameSettings::getPlayerName()
-	{
-		return playerName;
-	}
-
 	void GameSettings::setSoundLoud(float soundLoud)
 	{
-		this->soundLoud = soundLoud;
+		this->soundVolume = soundLoud;
 	}
 
 	void GameSettings::setMusicLoud(float musicLoud)
 	{
-		this->musicLoud = musicLoud;
+		this->musicVolume = musicLoud;
 	}
 
 	void GameSettings::setShellSpeed(float shellSpeed)
 	{
 		this->shellSpeed = shellSpeed;
-	}
-
-	void GameSettings::setPlayerName(std::string playerName)
-	{
-		this->playerName = playerName;
 	}
 }
