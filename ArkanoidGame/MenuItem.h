@@ -1,52 +1,171 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <functional>
+#include <list>
 
-#include "Math.h"
-//#include "UtilGraphic.h"
+#include "Util.h"
+#include "GameSettings.h"
 
 namespace ArkanoidGame
 {
-	template<typename F>
+	template<class F>
 	class MenuItem
 	{
 	private:
-		bool onFocus{ false };
+		bool focused{ false };
+		bool pressed{ false };
 		sf::Text text;
-		F callFunc;
+		F onClickEvent;
 
 	public:
+		// Constructors and Destructors
+
+		MenuItem() = default;
+		~MenuItem() = default;
+
+		// Getters
+
+		bool isPressed()
+		{
+			return pressed;
+		}
+
+		bool isFocused()
+		{
+			return focused;
+		}
+
+		std::string getButtonName()
+		{
+			return text.getString();
+		}
+
+		// Setters
+
+		void setPressed(bool pressed)
+		{
+			this->pressed = pressed;
+		}
+
+		// Operators
+
 		bool operator==(const MenuItem<F>& menuItem)
 		{
-			return this.text.getString() == menuItem.text.getString();
+			return this->text.getString() == menuItem.text.getString();
 		}
 
-		void InitMenuItem(MenuItem<F>& menuItem, const std::string text, const sf::Font& font, const unsigned int charSize, F callFunc)
+		// Init methods
+
+		void initMenuItem(const std::string string, const sf::Font& font, const unsigned int charSize, F onClickEvent = [](){})
 		{
-			InitText(menuItem.text, text, font, sf::Color::White, charSize);
-			menuItem.text.setOutlineColor(sf::Color::Green);
-			menuItem.callFunc = callFunc;
+			Util::UGraphic::initText(text, string, font, sf::Color::White, charSize);
+			text.setOutlineColor(sf::Color::Green);
+			this->onClickEvent = onClickEvent;
 		}
 
-		void DrawMenuItem(MenuItem<F>& menuItem, sf::RenderWindow& window)
+		// Run event after click
+
+		void clickEvent()
 		{
-			window.draw(menuItem.text);
+			pressed = !pressed;
+
+			onClickEvent();
 		}
 
-		void OnFocus(MenuItem<F>& menuItem)
+		// Visual methods
+
+		void setItemOrigin(const float xOrigin, const float yOrigin)
 		{
-			menuItem.onFocus = true;
-
-			menuItem.text.setOutlineThickness(2);
+			Util::UGraphic::setItemOrigin(text, xOrigin, yOrigin);
 		}
 
-		void LostFocus(MenuItem<F>& menuItem)
+		void setItemPosition(const float x, const float y)
 		{
-			menuItem.onFocus = false;
-
-			menuItem.text.setOutlineThickness(0);
+			text.setPosition(x, y);
 		}
 
-		void EditElement(std::string& playerName, sf::Font& font);
+		void drawMenuItem(sf::RenderWindow& window)
+		{
+			window.draw(text);
+		}
+
+		void onFocus()
+		{
+			focused = true;
+
+			text.setOutlineThickness(2);
+		}
+
+		void lostFocus()
+		{
+			focused = false;
+
+			text.setOutlineThickness(0);
+		}
+
+		static void runEditWindow(std::string& str, sf::Font& font, const int length, const std::string defaultStr)
+		{
+			sf::RenderWindow window(sf::VideoMode(GAME_SETTINGS.SCREEN_WIDTH_EDIT, GAME_SETTINGS.SCREEN_HEIGHT_EDIT), "Editor");
+
+			sf::Text text;
+			Util::UGraphic::initText(text, str, font, sf::Color::White, 20);
+			sf::String s = text.getString();
+
+			Util::UGraphic::setItemOrigin(text, 0.5f, 0.5f);
+			text.setPosition(GAME_SETTINGS.SCREEN_WIDTH_EDIT / 2.f, GAME_SETTINGS.SCREEN_HEIGHT_EDIT / 2.f);
+
+			window.display();
+
+			bool isFinished{ false };
+
+			while (window.isOpen())
+			{
+				sf::Event event;
+				while (window.pollEvent(event))
+				{
+					if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Enter)
+					{
+						window.close();
+					}
+					if (event.type == sf::Event::TextEntered)
+					{
+						if (event.text.unicode < 128)
+						{
+							if (event.text.unicode == '\b')
+							{
+								if (!s.isEmpty())
+									s.erase(s.getSize() - 1);
+							} else if (event.text.unicode == 13)
+							{
+								if (s.isEmpty())
+								{
+									str = defaultStr;
+								} else
+								{
+									str = s;
+								}
+							} else
+							{
+								if (s.getSize() < length)
+								{
+									s += event.text.unicode;
+								}
+							}
+							text.setString(s);
+						}
+						Util::UGraphic::setItemOrigin(text, 0.5f, 0.5f);
+						text.setPosition(GAME_SETTINGS.SCREEN_WIDTH_EDIT / 2.f, GAME_SETTINGS.SCREEN_HEIGHT_EDIT / 2.f);
+					}
+				}
+				window.clear();
+				window.draw(text);
+				window.display();
+			}
+		}
 	};
+
+	using call = std::function<void()>;
+	using active = std::list<MenuItem<call>>::iterator;
+	using activeRow = std::list<std::pair<MenuItem<call>, sf::RectangleShape>>::iterator;
 }

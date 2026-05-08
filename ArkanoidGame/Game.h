@@ -1,47 +1,58 @@
 #pragma once
-#include <unordered_map>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-//#include "Record.h"
-#include "GameSettings.h"
+#include "Record.h"
 #include "GameState.h"
+#include "GameSettings.h"
+#include "AudioManager.h"
 
 namespace ArkanoidGame
 {
 	class Game
 	{
 	private:
-		// Global data
-		int* ptrPlayerScores{ nullptr };
-
 		std::vector<GameState> gameStateStack;
 		EGameStateChangeType gameStateChangeType = EGameStateChangeType::None;
 		EGameStateType pendingGameStateType = EGameStateType::None;
 		bool pendingGameStateIsExclusivelyVisible = false;
 
-		sf::Music music;
+		Record playerRecord;
+		RecordsMap records;
 
-		GameSettings gameSettings;
-		std::unordered_map<std::string, int> records;
+		AudioManager audio;
 
 	public:
 		Game();
 		~Game();
 
-		GameSettings getGameSettigns();
+		// Setters
 
-		void HandleWindowEvents(sf::RenderWindow& window);
-		bool UpdateGame(float deltaTime); // Return false if game should be closed
-		void DrawGame(sf::RenderWindow& window);
+		void setPlayerRecord(Record record);
 
-		// Add new game state on top of the stack
-		void PushGameState(EGameStateType stateType, bool isExclusivelyVisible);
+		// Getters
 
-		// Remove current game state from the stack
-		void PopGameState();
+		Record getPlayerRecord();
+		RecordsMap getRecords();
+		AudioManager& getAudio();
 
-		// Remove all game states from the stack and add new one
-		void SwitchGameState(EGameStateType newState);
+		// Records logic
+
+		RecordsVector getSortedRecords();
+		void updateRecords(Record record);
+		void restartPlayerScore();
+
+		// Common methods
+
+		void handleWindowEvents(sf::RenderWindow& window);
+		bool update(float deltaTime);
+		void draw(sf::RenderWindow& window);
+
+		void pushGameState(EGameStateType stateType, bool isExclusivelyVisible);
+
+		void popGameState();
+
+		void switchGameState(EGameStateType newState);
 	};
 }

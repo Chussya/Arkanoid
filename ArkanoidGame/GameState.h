@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "GameStateData.h"
+
 namespace ArkanoidGame
 {
 	class Game;
@@ -10,8 +12,8 @@ namespace ArkanoidGame
 	{
 		None = 0,
 		Playing,
-		Complexity,
 		GameOver,
+		Victory,
 		Leaderboard,
 		MainMenu,
 		Options,
@@ -31,19 +33,40 @@ namespace ArkanoidGame
 	class GameState
 	{
 	private:
-		EGameStateType type = EGameStateType::None;
-		void* data = nullptr;
-		bool isExclusivelyVisible = false;
+		EGameStateType type{ EGameStateType::None };
+		std::unique_ptr<GameStateData> data{ nullptr };
+		bool isExclusivelyVisible{ false };
 
 	public:
-		GameState(EGameStateType type, void* data, bool isExclusivelyVisible);
+		// Constructors and Destructor
+
+		GameState() : type{ EGameStateType::None }, data{ nullptr }, isExclusivelyVisible{ false } {}
+		GameState(EGameStateType type, bool isExclusivelyVisible);
+		GameState(GameState&& state) noexcept { operator=(std::move(state)); }
+
+		GameState(const GameState&) = delete;
+
+		~GameState();
+
+		// Operators
+
+		GameState& operator=(const GameState&) = delete;
+
+		GameState& operator=(GameState&& state) noexcept
+		{
+			type = state.type;
+			data = std::move(state.data);
+			isExclusivelyVisible = state.isExclusivelyVisible;
+			state.data = nullptr;
+			return *this;
+		}
+
+		// Methods
 
 		bool isVisible();
 
-		void InitGameState(Game& game);
-		void ShutdownGameState(Game& game);
-		void HandleWindowEventGameState(Game& game, sf::Event& event);
-		void UpdateGameState(Game& game, float deltaTime);
-		void DrawGameState(Game& game, sf::RenderWindow& window);
+		void handleWindowEvent(sf::Event& event);
+		void update(float deltaTime);
+		void draw(sf::RenderWindow& window);
 	};
 }

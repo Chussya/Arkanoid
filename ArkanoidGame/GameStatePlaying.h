@@ -1,29 +1,31 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
+#include "Brick.h"
 #include "Shell.h"
 #include "Platform.h"
+#include "GameStateData.h"
 
 namespace ArkanoidGame
 {
 	class Game;
 
-	class GameStatePlayingData
+	class GameStatePlayingData : public GameStateData, public std::enable_shared_from_this<GameStatePlayingData>
 	{
 	private:
 		// State data
 
-		bool isKeyPressed{ false };
+		int score{ 0 };
+		float mouseMoveX{ 0.f };
 
 		// Game objects
 
-		Platform player;
-		Shell shell;
+		std::vector<std::shared_ptr<GameObject>> gameObjects;
+		std::vector<std::shared_ptr<Brick>> bricks;
 
-		// Resources
-
-		//sf::Texture appleTexture;
+		/// Resources
 
 		// Font
 
@@ -34,14 +36,23 @@ namespace ArkanoidGame
 		sf::Text scoreText;
 		sf::Text pauseNote;
 
+		// Sounds
+
+		sf::Sound soundHit;
+
 	public:
 		GameStatePlayingData();
+		~GameStatePlayingData();
 
-		void HandleGameStateWindowEvent(Game& game, const sf::Event event);
+		// GameStateData methods
 
-		void InitGameState(Game& game);
-		void DrawGameState(Game& game, sf::RenderWindow& window);
-		void UpdateGameState(Game& game, float deltaTime);
-		void ShutdownGameState(Game& game);
+		void init() override;
+		void handleWindowEvent(const sf::Event& event) override;
+		void draw(sf::RenderWindow& window) override;
+		void update(float deltaTime) override;
+
+		// Other
+
+		void createBlocks(const int count);
 	};
 }

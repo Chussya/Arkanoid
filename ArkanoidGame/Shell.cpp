@@ -1,100 +1,132 @@
 #include "Shell.h"
 
 #include "GameSettings.h"
+#include <cassert>
 
 namespace ArkanoidGame
 {
-	// Private
-
-	void Shell::reflection(const Vector2Df& platformSize)
-	{
-		// Side reflection
-		if (shell.getPosition().x - shell.getRadius() <= 0.f || shell.getPosition().x + shell.getRadius() >= ArkanoidGame::SCREEN_WIDTH_GAME)
-		{
-			vectorSpeed.x = -vectorSpeed.x;
-		}
-		// ceil reflection
-		if (shell.getPosition().y - shell.getRadius() <= 0.f)
-		{
-			vectorSpeed.y = -vectorSpeed.y;
-		}
-		// platform reflection
-		else if (ArkanoidGame::Math::isCircleCollideRect(convert<Vector2Df>(shell.getPosition()), shell.getRadius(), *ptrPlatformPos, PLATFORM_WIDTH_DEFAULT, PLATFORM_HEIGHT_DEFAULT))
-		{
-			vectorSpeed.x = speed * ((shell.getPosition().x - ptrPlatformPos->x) / (platformSize.x / 2));
-			vectorSpeed.y = -vectorSpeed.y;
-		}
-		// Shell fell
-		else if (shell.getPosition().y + shell.getRadius() >= ArkanoidGame::SCREEN_HEIGHT_GAME)
-		{
-			state.TurnOffMask(EShellState::Striked);
-			attachToPlatform();
-		}
-	}
-
-	void Shell::attachToPlatform()
-	{
-		shell.setPosition({ ptrPlatformPos->x, ptrPlatformPos->y - PLATFORM_HEIGHT_DEFAULT });
-
-		vectorSpeed.x = 0;
-		vectorSpeed.y = 0;
-	}
-
-	// Public
+	/// Public
 
 	Shell::Shell() :
-		state{ EShellState::Empty }, ptrPlatformPos{ nullptr }, speed{ 0.f }
+		state{ EShellState::Empty },
+		platformData{ nullptr, nullptr },
+		speed{ 0.f },
+		Collidable(Collidable::ECollisionShape::Circle),
+		GameObject(GAME_SETTINGS.RESOURCES_PATH + GAME_SETTINGS.IMG_PATH + "shell.png", { 0.f, 0.f }, GAME_SETTINGS.BALL_RADIUS_DEFAULT * 2, GAME_SETTINGS.BALL_RADIUS_DEFAULT * 2)
 	{
-		shell.setRadius(ArkanoidGame::BALL_RADIUS_DEFAULT);
-		shell.setFillColor(sf::Color::Red);
-		shell.setOrigin(ArkanoidGame::BALL_RADIUS_DEFAULT, ArkanoidGame::BALL_RADIUS_DEFAULT);
+		setSpriteOrigin(0.5f, 0.5f);
 	}
 
-	Shell::~Shell()
-	{
-		delete ptrPlatformPos;
-	}
+	Shell::~Shell() {}
 
 	void Shell::setSpeed(const float speed)
 	{
 		this->speed = speed;
 	}
 
+	void Shell::setPlatformData(const PlatformData platformData)
+	{
+		this->platformData = platformData;
+	}
+
+	bool Shell::checkState(const EShellState state)
+	{
+		return this->state.IsBitMaskOn(state);
+	}
+
+	void Shell::invertX()
+	{
+		vectorSpeed.x *= -1;
+	}
+
+	void Shell::invertY()
+	{
+		vectorSpeed.y *= -1;
+	}
+
 	void Shell::strike()
 	{
-		this->state.TurnOnMask(EShellState::Striked);
+		state.SetMask(EShellState::Striked);
 		vectorSpeed.y = -speed;
-	}
 
-	void Shell::memorisePlatformPos(Vector2Df& pos)
-	{
-		this->ptrPlatformPos = &pos;
-		attachToPlatform();
-	}
-
-	void Shell::move(const Vector2Df& platformSize, const float deltaTime)
-	{
-		if (state.IsBitMaskOn(EShellState::Striked))
+		if (getPosition().x - (getRect().width / 2) <= 0)
 		{
-			reflection(platformSize);
-
-			if (!state.IsBitMaskOn(EShellState::Fallen))
-			{
-				shell.setPosition(shell.getPosition().x + vectorSpeed.x * deltaTime, shell.getPosition().y + vectorSpeed.y * deltaTime);
-			}
-		} else
+			sprite.setPosition({ getPosition().x + (getRect().width / 2) + 1.f, getPosition().y });
+		} else if (getPosition().x + (getRect().width / 2) >= GAME_SETTINGS.SCREEN_WIDTH_GAME)
 		{
-			shell.setPosition({ ptrPlatformPos->x, shell.getPosition().y });
+			sprite.setPosition({ getPosition().x - (getRect().width / 2) - 1.f, getPosition().y });
 		}
 	}
 
-	bool Shell::isActive()
+	void Shell::collidePlatform(ECollisionSide collision)
 	{
-		return !state.IsBitMaskOn(EShellState::Fallen) && state.IsBitMaskOn(EShellState::Striked);
+		vectorSpeed.x = speed * ((sprite.getPosition().x - platformData.ptrPos->x) / (*platformData.ptrWidth / 2));
+
+		setCollisionSide(collision);
 	}
 
-	void Shell::drawOnWindow(sf::RenderWindow& window)
+	void Shell::attachToPlatform()
 	{
-		window.draw(shell);
+		sprite.setPosition({ platformData.ptrPos->x, platformData.ptrPos->y - GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT });
+		state.SetMask(EShellState::Empty);
+
+		vectorSpeed.x = 0;
+		vectorSpeed.y = 0;
+	}
+
+	void Shell::addState(const EShellState& state)
+	{
+		this->state.AddMask(state);
+	}
+
+	void Shell::update(const float deltaTime)
+	{
+		if (state.IsBitMaskOn(EShellState::Striked))
+		{
+			sprite.setPosition(sprite.getPosition().x + vectorSpeed.x * deltaTime, sprite.getPosition().y + vectorSpeed.y * deltaTime);
+
+			if (getRect().top <= 0.f)
+			{
+				invertY();
+			} else if (getRect().left <= 0.f || getRect().left + getRect().width >= GAME_SETTINGS.SCREEN_WIDTH_GAME)
+			{
+				invertX();
+			} else if (getRect().top + getRect().height >= GAME_SETTINGS.SCREEN_HEIGHT_GAME)
+			{
+				state.SetMask(EShellState::Fallen);
+			}
+		} else
+		{
+			sprite.setPosition({ platformData.ptrPos->x, sprite.getPosition().y });
+		}
+	}
+
+	void Shell::onHit()
+	{
+		if (state.IsBitMaskOn(EShellState::Striked))
+		{
+			if (getCollisionSide() == ECollisionSide::Right || getCollisionSide() == ECollisionSide::Left)
+			{
+				invertX();
+			} else if (getCollisionSide() == ECollisionSide::Top || getCollisionSide() == ECollisionSide::Bottom)
+			{
+				invertY();
+			}  else if (getCollisionSide() == ECollisionSide::Angle)
+			{
+				invertX();
+				invertY();
+			}
+			setCollisionSide(ECollisionSide::Empty);
+		} else if (state.IsBitMaskOn(EShellState::Fallen))
+		{
+
+		}
+	}
+
+	bool Shell::isCollide(std::shared_ptr<Collidable> collidable)
+	{
+		auto gameObject = std::dynamic_pointer_cast<GameObject>(collidable);
+		assert(gameObject);
+		return getRect().intersects(gameObject->getRect());
 	}
 }

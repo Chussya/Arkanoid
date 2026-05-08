@@ -1,15 +1,24 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
 #include "Math.h"
-#include "Vector2D.h"
+#include "GameObject.h"
+#include "Collidable.h"
 
 namespace ArkanoidGame
 {
-	class Shell
+	class GameSettings;
+
+	struct PlatformData
 	{
-	private:
+		// Special pointer of platform's width
+		float* ptrWidth;
+		// Special pointer of platform's position
+		Vector2Df* ptrPos;
+	};
+
+	class Shell : public GameObject, public Collidable
+	{
+	public:
 		enum class EShellState
 		{
 			Striked = 1 << 0,
@@ -28,29 +37,38 @@ namespace ArkanoidGame
 		// Speed of vectors X and Y
 		Vector2Df vectorSpeed;
 
-		// Special pointer of platform's position when shell isn't striked
-		Vector2Df* ptrPlatformPos;
-
-		// Form of shell
-		sf::CircleShape shell;
-
-	private:
-		void reflection(const Vector2Df& platformSize);
-		void attachToPlatform();
+		PlatformData platformData;
 
 	public:
+
 		Shell();
 		~Shell();
 
+		/// Setters
+
 		void setSpeed(const float speed);
+		void setPlatformData(const PlatformData platformData);
+
+		/// Interaction
+
+		bool checkState(const EShellState state);
+
+		void invertX();
+		void invertY();
 
 		void strike();
+		void attachToPlatform();
 
-		void memorisePlatformPos(Vector2Df& platformPos);
-		void move(const Vector2Df& platformSize, const float deltaTime);
+		void collidePlatform(ECollisionSide collision);
+		void addState(const EShellState& state);
 
-		bool isActive();
+		/// Inherited via GameObject
 
-		void drawOnWindow(sf::RenderWindow& window);
+		void update(const float deltaTime) override;
+
+		/// Inherited via Collidable
+
+		void onHit() override;
+		bool isCollide(std::shared_ptr<Collidable> collidable) override;
 	};
 }

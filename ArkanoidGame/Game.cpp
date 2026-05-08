@@ -2,45 +2,95 @@
 
 #include <cassert>
 
-//#include "Record.h"
-//#include "GameStateMainMenu.h"
-//#include "GameStateLeaderboard.h"
-//#include "GameStateOptions.h"
-//#include "GameStateComplexity.h"
-//#include "GameStatePause.h"
-//#include "GameStateGameOver.h"
-
 namespace ArkanoidGame
 {
 	Game::Game()
 	{
-		this->gameStateChangeType = EGameStateChangeType::None;
-		this->pendingGameStateType = EGameStateType::None;
-		this->pendingGameStateIsExclusivelyVisible = false;
-		//SwitchGameState(EGameStateType::MainMenu);
-		SwitchGameState(EGameStateType::Playing);
+		// Generate fake records table
+		playerRecord = { GAME_SETTINGS.PLAYER_NAME_DEFAULT, 0 };
+		records = { {playerRecord.first, playerRecord.second} };
+
+		gameStateChangeType = EGameStateChangeType::None;
+		pendingGameStateType = EGameStateType::None;
+		pendingGameStateIsExclusivelyVisible = false;
+
+		audio.loadSoundBuffer(AudioManager::ESoundEffect::Hit, GAME_SETTINGS.SOUND_PATH + "hit.wav");
+		audio.loadSoundBuffer(AudioManager::ESoundEffect::Death, GAME_SETTINGS.SOUND_PATH + "death.wav");
+		audio.loadSoundBuffer(AudioManager::ESoundEffect::Victory, GAME_SETTINGS.SOUND_PATH + "victory.wav");
+
+		switchGameState(EGameStateType::MainMenu);
 	}
 
 	Game::~Game()
 	{
 		// Shutdown all game states
-		while (this->gameStateStack.size() > 0)
+		while (gameStateStack.size() > 0)
 		{
-			gameStateStack.back().ShutdownGameState(*this);
-			this->gameStateStack.pop_back();
+			gameStateStack.pop_back();
 		}
 
-		this->gameStateChangeType = EGameStateChangeType::None;
-		this->pendingGameStateType = EGameStateType::None;
-		this->pendingGameStateIsExclusivelyVisible = false;
+		gameStateChangeType = EGameStateChangeType::None;
+		pendingGameStateType = EGameStateType::None;
+		pendingGameStateIsExclusivelyVisible = false;
+
+		records.clear();
 	}
 
-	GameSettings Game::getGameSettigns()
+	void Game::setPlayerRecord(Record record)
 	{
-		return this->gameSettings;
+		playerRecord = record;
 	}
 
-	void Game::HandleWindowEvents(sf::RenderWindow& window)
+	Record Game::getPlayerRecord()
+	{
+		return playerRecord;
+	}
+
+	RecordsMap Game::getRecords()
+	{
+		return records;
+	}
+
+	AudioManager& Game::getAudio()
+	{
+		return audio;
+	}
+
+	RecordsVector Game::getSortedRecords()
+	{
+		RecordsVector vRecords(records.begin(), records.end());
+
+		std::sort(vRecords.begin(), vRecords.end(), [](std::pair<std::string, int> record1, std::pair<std::string, int> record2) { return record1.second > record2.second; });
+
+		return vRecords;
+	}
+
+	void Game::updateRecords(Record record)
+	{
+		if (records.size() == 0 && records.begin()->second == 0)
+		{
+			records.clear();
+			records.insert({ record.first, record.second });
+		} else
+		{
+			auto foundIt = records.find(record.first);
+
+			if (foundIt != records.end())
+			{
+				records[record.first] = record.second;
+			} else
+			{
+				records.insert({ record.first, record.second });
+			}
+		}
+	}
+
+	void Game::restartPlayerScore()
+	{
+		playerRecord.second = 0;
+	}
+
+	void Game::handleWindowEvents(sf::RenderWindow& window)
 	{
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -51,58 +101,55 @@ namespace ArkanoidGame
 				window.close();
 			}
 
-			if (this->gameStateStack.size() > 0)
+			if (gameStateStack.size() > 0)
 			{
-				gameStateStack.back().HandleWindowEventGameState(*this, event);
+				gameStateStack.back().handleWindowEvent(event);
 			}
 		}
 	}
 
-	bool Game::UpdateGame(float deltaTime)
+	bool Game::update(float deltaTime)
 	{
-		if (this->gameStateChangeType == EGameStateChangeType::Switch)
+		if (gameStateChangeType == EGameStateChangeType::Switch)
 		{
 			// Shutdown all game states
-			while (this->gameStateStack.size() > 0)
+			while (gameStateStack.size() > 0)
 			{
-				gameStateStack.back().ShutdownGameState(*this);
-				this->gameStateStack.pop_back();
+				gameStateStack.pop_back();
 			}
-		} else if (this->gameStateChangeType == EGameStateChangeType::Pop)
+		} else if (gameStateChangeType == EGameStateChangeType::Pop)
 		{
 			// Shutdown only current game state
-			if (this->gameStateStack.size() > 0)
+			if (gameStateStack.size() > 0)
 			{
-				gameStateStack.back().ShutdownGameState(*this);
-				this->gameStateStack.pop_back();
+				gameStateStack.pop_back();
 			}
 		}
 
 		// Initialize new game state if needed
-		if (this->pendingGameStateType != EGameStateType::None && this->pendingGameStateType != EGameStateType::Exit)
+		if (pendingGameStateType != EGameStateType::None && pendingGameStateType != EGameStateType::Exit)
 		{
-			this->gameStateStack.push_back({ this->pendingGameStateType, nullptr, this->pendingGameStateIsExclusivelyVisible });
-			gameStateStack.back().InitGameState(*this);
+			gameStateStack.push_back(GameState{ pendingGameStateType, pendingGameStateIsExclusivelyVisible });
 		}
 
-		this->gameStateChangeType = EGameStateChangeType::None;
-		this->pendingGameStateType = EGameStateType::None;
-		this->pendingGameStateIsExclusivelyVisible = false;
+		gameStateChangeType = EGameStateChangeType::None;
+		pendingGameStateType = EGameStateType::None;
+		pendingGameStateIsExclusivelyVisible = false;
 
-		if (this->gameStateStack.size() > 0)
+		if (gameStateStack.size() > 0)
 		{
-			this->gameStateStack.back().UpdateGameState(*this, deltaTime);
+			gameStateStack.back().update(deltaTime);
 			return true;
 		}
 		return false;
 	}
 
-	void Game::DrawGame(sf::RenderWindow& window)
+	void Game::draw(sf::RenderWindow& window)
 	{
-		if (this->gameStateStack.size() > 0)
+		if (gameStateStack.size() > 0)
 		{
 			std::vector<GameState*> visibleGameStates;
-			for (auto it = this->gameStateStack.rbegin(); it != this->gameStateStack.rend(); ++it)
+			for (auto it = gameStateStack.rbegin(); it != gameStateStack.rend(); ++it)
 			{
 				visibleGameStates.push_back(&(*it));
 				if (it->isVisible())
@@ -113,29 +160,29 @@ namespace ArkanoidGame
 
 			for (auto it = visibleGameStates.rbegin(); it != visibleGameStates.rend(); ++it)
 			{
-				(*it)->DrawGameState(*this, window);
+				(*it)->draw(window);
 			}
 		}
 	}
 
-	void Game::PushGameState(EGameStateType stateType, bool isExclusivelyVisible)
+	void Game::pushGameState(EGameStateType stateType, bool isExclusivelyVisible)
 	{
-		this->pendingGameStateType = stateType;
-		this->pendingGameStateIsExclusivelyVisible = isExclusivelyVisible;
-		this->gameStateChangeType = EGameStateChangeType::Push;
+		pendingGameStateType = stateType;
+		pendingGameStateIsExclusivelyVisible = isExclusivelyVisible;
+		gameStateChangeType = EGameStateChangeType::Push;
 	}
 
-	void Game::PopGameState()
+	void Game::popGameState()
 	{
-		this->pendingGameStateType = EGameStateType::None;
-		this->pendingGameStateIsExclusivelyVisible = false;
-		this->gameStateChangeType = EGameStateChangeType::Pop;
+		pendingGameStateType = EGameStateType::None;
+		pendingGameStateIsExclusivelyVisible = false;
+		gameStateChangeType = EGameStateChangeType::Pop;
 	}
 
-	void Game::SwitchGameState(EGameStateType newState)
+	void Game::switchGameState(EGameStateType newState)
 	{
-		this->pendingGameStateType = newState;
-		this->pendingGameStateIsExclusivelyVisible = false;
-		this->gameStateChangeType = EGameStateChangeType::Switch;
+		pendingGameStateType = newState;
+		pendingGameStateIsExclusivelyVisible = false;
+		gameStateChangeType = EGameStateChangeType::Switch;
 	}
 }
