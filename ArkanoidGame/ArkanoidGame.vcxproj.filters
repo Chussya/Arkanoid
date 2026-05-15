@@ -70,6 +70,9 @@
     <ClCompile Include="AudioManager.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="LevelManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -139,6 +142,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="AudioManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

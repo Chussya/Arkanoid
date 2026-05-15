@@ -40,7 +40,6 @@ namespace ArkanoidGame
 		PlatformData platformData;
 
 	public:
-
 		Shell();
 		~Shell();
 

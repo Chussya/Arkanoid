@@ -42,6 +42,18 @@ namespace ArkanoidGame
 		return v1.x == v2.x && v1.y == v2.y;
 	}
 
+	template<class T>
+	bool operator>(const Vector2D<T> &v1, const Vector2D<T> &v2)
+	{
+		return v1.x > v2.x && v1.y > v2.y;
+	}
+
+	template<class T>
+	bool operator<(const Vector2D<T> &v1, const Vector2D<T> &v2)
+	{
+		return v1.x < v2.x && v1.y < v2.y;
+	}
+
 	template<class To, class From>
 	To convert(const From& from)
 	{

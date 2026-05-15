@@ -12,7 +12,7 @@ namespace ArkanoidGame
 	{
 		// Init Fonts
 
-		assert(font.loadFromFile(GAME_SETTINGS.RESOURCES_PATH + "Fonts/Roboto-Light.ttf"));
+		assert(font.loadFromFile(GAME_SETTINGS.FONT_PATH + "Roboto-Light.ttf"));
 
 		// Init Texts
 

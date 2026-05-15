@@ -170,6 +170,7 @@
     <ClCompile Include="GameStateOptions.cpp" />
     <ClCompile Include="GameStatePause.cpp" />
     <ClCompile Include="GameStateVictory.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Shell.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="GameStateOptions.h" />
     <ClInclude Include="GameStatePause.h" />
     <ClInclude Include="GameStateVictory.h" />
+    <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Record.h" />
     <ClInclude Include="Shell.h" />

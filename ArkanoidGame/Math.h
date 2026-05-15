@@ -1,4 +1,7 @@
 #pragma once
+
+#include <random>
+
 #include "Vector2D.h"
 
 namespace ArkanoidGame
@@ -39,5 +42,10 @@ namespace ArkanoidGame
 				return mask & static_cast<int>(checkMask);
 			}
 		};
+
+		static int getRandNumTo(int num)
+		{
+			return std::rand() % num;
+		}
 	};
 }

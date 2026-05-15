@@ -25,12 +25,14 @@ namespace ArkanoidGame
 
 	public:
 		// Constants
-		// Path
+		// Paths
 
 		const std::string RESOURCES_PATH{ "Resources/" };
-		const std::string IMG_PATH{ "Images/" };
-		const std::string SOUND_PATH{ RESOURCES_PATH + "Audio/Sounds/" };
+		const std::string IMG_PATH{ "Image/" };
+		const std::string FONT_PATH{ RESOURCES_PATH + "Font/" };
+		const std::string SOUND_PATH{ RESOURCES_PATH + "Audio/Sound/" };
 		const std::string MUSIC_PATH{ RESOURCES_PATH + "Audio/Music/" };
+		const std::string CONFIG_PATH{ RESOURCES_PATH + "Config/" };
 
 		// Display
 
@@ -44,13 +46,21 @@ namespace ArkanoidGame
 
 		// Game
 
-		const int BRICKS_COUNT{ 10 };
+		const int BRICKS_COUNT_ROW{ 14 };
+		const int BRICKS_COUNT_COL{ 14 };
+		const float BRICK_WIDTH_DEFAULT{ 40.f };
+		const float BRICK_HEIGHT_DEFAULT{ 20.f };
+		const float BRICK_SHIFT_WIDTH{ 10.f };
+		const float BRICK_SHIFT_HEIGHT{ 25.f };
+
 		const float BONUS_SPEED{ 100.f };
+
 		const float PLATFORM_WIDTH_DEFAULT{ 90.f };
 		const float PLATFORM_HEIGHT_DEFAULT{ 20.f };
-		const float BRICK_WIDTH_DEFAULT{ 80.f };
-		const float BRICK_HEIGHT_DEFAULT{ 20.f };
+
 		const float BALL_RADIUS_DEFAULT{ 10.f };
+
+		const int MAX_LEVEL{ 3 };
 
 		// Leaderboard
 

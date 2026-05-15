@@ -18,6 +18,15 @@ namespace ArkanoidGame
 		return result;
 	}
 
+	bool Util::UString::isNumeric(const std::string& str)
+	{
+		return !str.empty() && std::all_of(str.begin(), str.end(), 
+			[](unsigned char c)
+			{
+				return std::isdigit(c);
+			});
+	}
+
 	void Util::UGraphic::initText(sf::Text& text, std::string s, const sf::Font& font, const sf::Color colorText, const unsigned int charSize)
 	{
 		text.setFont(font);

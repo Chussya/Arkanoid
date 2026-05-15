@@ -11,32 +11,75 @@ namespace ArkanoidGame
 
 	class Brick : public GameObject, public Collidable
 	{
-	public:
-		enum class EBrickState
-		{
-			Disappearing = 1,
-			Disappeared = 2,
-
-			Empty = 0
-		};
-
-	private:
-		Math::BitMask<EBrickState> state;
+	protected:
 		const float fadeSpeed{ 0.f };
+		int score{ 0 };
+		int healthPoint{ 1 };
 
 	public:
-		Brick(Vector2Df pos);
+		Brick(const Vector2Df& pos, const sf::Color& color);
 		~Brick() = default;
 
-		/// Interaction
+		// Getters
+
+		int getScore();
+
+		// Interaction
 
 		bool isAlive();
+		bool isDisappeared();
 
-		/// Inherited via GameObject
+		void disappear(const float deltaTime);
+
+		// Inherited via GameObject
+
+		void update(const float deltaTime) override {}
+
+		// Inherited via Collidable
+
+		bool isCollide(std::shared_ptr<Collidable> collidable) override;
+	};
+
+	class SmoothDestroybleBrick : public Brick
+	{
+	protected:
+		sf::Color color;
+
+	public:
+		SmoothDestroybleBrick(const Vector2Df& position, const sf::Color& color = sf::Color::Green);
+		~SmoothDestroybleBrick() = default;
+
+		// Inherited via GameObject
 
 		void update(const float deltaTime) override;
 
-		/// Inherited via Collidable
+		// Inherited via Collidable
+
+		bool isCollide(std::shared_ptr<Collidable> collidable) override;
+	};
+
+	class UnbreackableBrick : public Brick
+	{
+	public:
+		UnbreackableBrick(const Vector2Df& position);
+
+		void update(float) override {}
+	};
+
+	class DurableBrick : public Brick
+	{
+	protected:
+		sf::Color color;
+
+	public:
+		DurableBrick(const Vector2Df& position, const sf::Color& color = sf::Color::Magenta);
+		~DurableBrick() = default;
+
+		// Inherited via GameObject
+
+		void update(const float deltaTime) override;
+
+		// Inherited via Collidable
 
 		bool isCollide(std::shared_ptr<Collidable> collidable) override;
 	};
