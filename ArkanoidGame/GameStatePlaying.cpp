@@ -47,7 +47,7 @@ namespace ArkanoidGame
 	void GameStatePlayingData::init()
 	{
 		// Init fonts
-		assert(font.loadFromFile(GAME_SETTINGS.RESOURCES_PATH + "Fonts/arial.ttf"));
+		assert(font.loadFromFile(GAME_SETTINGS.FONT_PATH + "arial.ttf"));
 
 		// Init texts
 		Util::UGraphic::initText(scoreText, "SCORES: " + std::to_string(score), font, sf::Color::White, 20);
@@ -66,7 +66,8 @@ namespace ArkanoidGame
 		gameObjects.emplace_back(player);
 		gameObjects.emplace_back(shell);
 
-		createBlocks(GAME_SETTINGS.BRICKS_COUNT - 2);
+		// Init level:
+		createLevel();
 	}
 
 	void GameStatePlayingData::draw(sf::RenderWindow& window)
@@ -105,10 +106,11 @@ namespace ArkanoidGame
 			brick->update(deltaTime);
 		}
 
-		auto aliveBricks = std::count_if(bricks.begin(), bricks.end(), [](std::shared_ptr<Brick> b) { return b->isAlive(); });
+		auto aliveBricks = std::count_if(bricks.begin(), bricks.end(), [](std::shared_ptr<Brick> b) { return b->isAlive() && b->getScore() > 0; });
 
 		if (aliveBricks == 0)
 		{
+			Application::getInstance().getGame().getLevelManager().nextLevel();
 			Application::getInstance().getGame().pushGameState(EGameStateType::Victory, false);
 			Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Victory);
 		}
@@ -123,12 +125,14 @@ namespace ArkanoidGame
 			{
 				if (brick->isAlive() && brick->checkCollision(ptrShell))
 				{
-					++score;
-
 					soundHit.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Hit));
 					soundHit.setVolume(GAME_SETTINGS.getSoundVolume());
 					soundHit.play();
 
+					if (!brick->isAlive())
+					{
+						score += brick->getScore();
+					}
 					break;
 				}
 			}
@@ -139,14 +143,46 @@ namespace ArkanoidGame
 		}
 	}
 
-	void GameStatePlayingData::createBlocks(const int count)
+	void GameStatePlayingData::createLevel()
 	{
-		Vector2Df pos = { 40.f, 200.f };
+		float startHeight{ 100.f };
+		float startWidth{ 60.f };
+		Vector2Df pos = { startWidth, startHeight };
+		BricksTemplate arr = Application::getInstance().getGame().getLevelManager().getLevel();
 
-		for (int i = 0; i < count; ++i)
-		{
-			bricks.emplace_back(std::make_shared<Brick>(Brick(pos)));
-			pos.x += GAME_SETTINGS.BRICK_WIDTH_DEFAULT + 10.f;
-		}
+		std::for_each(arr.begin(), arr.end(),
+			[&](const BricksRow& row)
+			{
+				std::for_each(row.begin(), row.end(),
+					[&](int element)
+					{
+						switch (element)
+						{
+						case 0:
+						{
+							auto brick = std::make_shared<UnbreackableBrick>(pos);
+							bricks.emplace_back(brick);
+							break;
+						}
+						case 1:
+						{
+							auto brick = std::make_shared<SmoothDestroybleBrick>(pos);
+							bricks.emplace_back(brick);
+							break;
+						}
+						case 2:
+						{
+							auto brick = std::make_shared<DurableBrick>(pos);
+							bricks.emplace_back(brick);
+							break;
+						}
+						default:
+							break;
+						}
+						pos.x += GAME_SETTINGS.BRICK_WIDTH_DEFAULT + GAME_SETTINGS.BRICK_SHIFT_WIDTH;
+					});
+				pos.x = startWidth;
+				pos.y += GAME_SETTINGS.BRICK_SHIFT_HEIGHT;
+			});
 	}
 }

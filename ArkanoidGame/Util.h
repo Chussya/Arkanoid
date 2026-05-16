@@ -20,6 +20,8 @@ namespace ArkanoidGame
 		public:
 			static std::string stringFormat(std::string s1, std::string s2, const char sym, const size_t length);
 			static std::string stringCenter(std::string s, const char sym, const size_t length);
+
+			static bool isNumeric(const std::string& str);
 		};
 
 		class UGraphic

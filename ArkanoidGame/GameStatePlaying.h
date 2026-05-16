@@ -26,7 +26,6 @@ namespace ArkanoidGame
 		std::vector<std::shared_ptr<Brick>> bricks;
 
 		/// Resources
-
 		// Font
 
 		sf::Font font;
@@ -53,6 +52,6 @@ namespace ArkanoidGame
 
 		// Other
 
-		void createBlocks(const int count);
+		void createLevel();
 	};
 }

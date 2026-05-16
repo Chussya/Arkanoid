@@ -12,8 +12,8 @@ namespace ArkanoidGame
 	{
 		// Init fonts
 
-		assert(font.loadFromFile(GAME_SETTINGS.RESOURCES_PATH + "Fonts/arial.ttf"));
-		assert(recordsFont.loadFromFile(GAME_SETTINGS.RESOURCES_PATH + "Fonts/consola.ttf"));
+		assert(font.loadFromFile(GAME_SETTINGS.FONT_PATH + "arial.ttf"));
+		assert(recordsFont.loadFromFile(GAME_SETTINGS.FONT_PATH + "consola.ttf"));
 
 		// Sort records
 

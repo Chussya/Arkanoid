@@ -56,6 +56,11 @@ namespace ArkanoidGame
 		return audio;
 	}
 
+	LevelManager& Game::getLevelManager()
+	{
+		return lvlManager;
+	}
+
 	RecordsVector Game::getSortedRecords()
 	{
 		RecordsVector vRecords(records.begin(), records.end());
@@ -67,7 +72,7 @@ namespace ArkanoidGame
 
 	void Game::updateRecords(Record record)
 	{
-		if (records.size() == 0 && records.begin()->second == 0)
+		if (records.size() == 1 && records.begin()->second == 0)
 		{
 			records.clear();
 			records.insert({ record.first, record.second });

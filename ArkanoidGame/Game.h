@@ -7,6 +7,7 @@
 #include "GameState.h"
 #include "GameSettings.h"
 #include "AudioManager.h"
+#include "LevelManager.h"
 
 namespace ArkanoidGame
 {
@@ -21,6 +22,7 @@ namespace ArkanoidGame
 		Record playerRecord;
 		RecordsMap records;
 
+		LevelManager lvlManager;
 		AudioManager audio;
 
 	public:
@@ -36,6 +38,7 @@ namespace ArkanoidGame
 		Record getPlayerRecord();
 		RecordsMap getRecords();
 		AudioManager& getAudio();
+		LevelManager& getLevelManager();
 
 		// Records logic
 
