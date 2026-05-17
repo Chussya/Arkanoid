@@ -65,7 +65,7 @@ namespace ArkanoidGame
 			[]()
 			{
 				Application::getInstance().getGame().getAudio().stopMusic();
-				Application::getInstance().getGame().switchGameState(ArkanoidGame::EGameStateType::Playing);
+				Application::getInstance().getGame().startGame();
 			}
 		);
 		startGame.setItemOrigin(0.5f, 0.5f);
@@ -76,7 +76,7 @@ namespace ArkanoidGame
 			"Leaderboard",
 			font,
 			40,
-			[]() { Application::getInstance().getGame().switchGameState(EGameStateType::Leaderboard); }
+			[]() { Application::getInstance().getGame().showLeaderboards(); }
 		);
 		leaderboard.setItemOrigin(0.5f, 0.5f);
 
@@ -86,7 +86,7 @@ namespace ArkanoidGame
 			"Options",
 			font,
 			40,
-			[]() { Application::getInstance().getGame().switchGameState(EGameStateType::Options); }
+			[]() { Application::getInstance().getGame().showOptions(); }
 		);
 		options.setItemOrigin(0.5f, 0.5f);
 
@@ -99,7 +99,7 @@ namespace ArkanoidGame
 			[]()
 			{
 				Application::getInstance().getGame().getAudio().stopMusic();
-				Application::getInstance().getGame().switchGameState(EGameStateType::Exit);
+				Application::getInstance().getGame().quitGame();
 			}
 		);
 		exit.setItemOrigin(0.5f, 0.5f);

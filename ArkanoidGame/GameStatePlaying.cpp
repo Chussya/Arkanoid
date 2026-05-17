@@ -36,10 +36,10 @@ namespace ArkanoidGame
 		{
 			if (event.key.code == sf::Keyboard::Escape || event.key.code == sf::Keyboard::B)
 			{
-				Application::getInstance().getGame().switchGameState(EGameStateType::MainMenu);
+				Application::getInstance().getGame().exitGame();
 			} else if (event.key.code == sf::Keyboard::P)
 			{
-				Application::getInstance().getGame().pushGameState(EGameStateType::Pause, false);
+				Application::getInstance().getGame().pauseGame();
 			}
 		}
 	}
@@ -143,7 +143,7 @@ namespace ArkanoidGame
 		} else if (ptrShell->checkState(Shell::EShellState::Fallen))
 		{
 			Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Death);
-			Application::getInstance().getGame().switchGameState(EGameStateType::GameOver);
+			Application::getInstance().getGame().looseGame();
 		}
 	}
 

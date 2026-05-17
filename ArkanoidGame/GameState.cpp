@@ -67,6 +67,11 @@ namespace ArkanoidGame
 		data = nullptr;
 	}
 
+	EGameStateType GameState::getType() const
+	{
+		return type;
+	}
+
 	bool GameState::isVisible()
 	{
 		return isExclusivelyVisible;

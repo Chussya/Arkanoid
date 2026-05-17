@@ -14,7 +14,7 @@ namespace ArkanoidGame
 	class Game
 	{
 	private:
-		std::vector<GameState> gameStateStack;
+		std::vector<GameState> stateStack;
 		EGameStateChangeType gameStateChangeType = EGameStateChangeType::None;
 		EGameStateType pendingGameStateType = EGameStateType::None;
 		bool pendingGameStateIsExclusivelyVisible = false;
@@ -23,6 +23,17 @@ namespace ArkanoidGame
 		RecordsMap records;
 
 		AudioManager audio;
+
+		// General methods
+
+		void handleWindowEvents(sf::RenderWindow& window);
+		bool update(float deltaTime);
+		void draw(sf::RenderWindow& window);
+
+		// State methods
+
+		void pushGameState(EGameStateType stateType, bool isExclusivelyVisible);
+		void switchGameState(EGameStateType newState);
 
 	public:
 		Game();
@@ -44,16 +55,21 @@ namespace ArkanoidGame
 		void updateRecords(Record record);
 		void restartPlayerScore();
 
-		// Common methods
-
-		void handleWindowEvents(sf::RenderWindow& window);
-		bool update(float deltaTime);
-		void draw(sf::RenderWindow& window);
-
-		void pushGameState(EGameStateType stateType, bool isExclusivelyVisible);
+		// State methods
 
 		void popGameState();
 
-		void switchGameState(EGameStateType newState);
+		// Game methods
+
+		void startGame();
+		void pauseGame();
+		void winGame();
+		void looseGame();
+		void exitGame();
+		void quitGame();
+		void showOptions();
+		void showLeaderboards();
+		void loadNextLevel();
+		void updateGame(float timeDelta, sf::RenderWindow& window);
 	};
 }

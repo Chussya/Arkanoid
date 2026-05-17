@@ -54,7 +54,7 @@ namespace ArkanoidGame
 		{
 			if (event.key.code == sf::Keyboard::B || event.key.code == sf::Keyboard::Escape)
 			{
-				Application::getInstance().getGame().switchGameState(EGameStateType::MainMenu);
+				Application::getInstance().getGame().exitGame();
 			}
 		}
 	}

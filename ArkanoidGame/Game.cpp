@@ -2,8 +2,103 @@
 
 #include <cassert>
 
+#include "GameStatePlaying.h"
+
 namespace ArkanoidGame
 {
+	// Private
+
+	void Game::handleWindowEvents(sf::RenderWindow& window)
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			// Close window if close button or Escape key pressed
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+			}
+
+			if (stateStack.size() > 0)
+			{
+				stateStack.back().handleWindowEvent(event);
+			}
+		}
+	}
+
+	bool Game::update(float deltaTime)
+	{
+		if (gameStateChangeType == EGameStateChangeType::Switch)
+		{
+			// Shutdown all game states
+			while (stateStack.size() > 0)
+			{
+				stateStack.pop_back();
+			}
+		} else if (gameStateChangeType == EGameStateChangeType::Pop)
+		{
+			// Shutdown only current game state
+			if (stateStack.size() > 0)
+			{
+				stateStack.pop_back();
+			}
+		}
+
+		// Initialize new game state if needed
+		if (pendingGameStateType != EGameStateType::None && pendingGameStateType != EGameStateType::Exit)
+		{
+			stateStack.push_back(GameState{ pendingGameStateType, pendingGameStateIsExclusivelyVisible });
+		}
+
+		gameStateChangeType = EGameStateChangeType::None;
+		pendingGameStateType = EGameStateType::None;
+		pendingGameStateIsExclusivelyVisible = false;
+
+		if (stateStack.size() > 0)
+		{
+			stateStack.back().update(deltaTime);
+			return true;
+		}
+		return false;
+	}
+
+	void Game::draw(sf::RenderWindow& window)
+	{
+		if (stateStack.size() > 0)
+		{
+			std::vector<GameState*> visibleGameStates;
+			for (auto it = stateStack.rbegin(); it != stateStack.rend(); ++it)
+			{
+				visibleGameStates.push_back(&(*it));
+				if (it->isVisible())
+				{
+					break;
+				}
+			}
+
+			for (auto it = visibleGameStates.rbegin(); it != visibleGameStates.rend(); ++it)
+			{
+				(*it)->draw(window);
+			}
+		}
+	}
+
+	void Game::pushGameState(EGameStateType stateType, bool isExclusivelyVisible)
+	{
+		pendingGameStateType = stateType;
+		pendingGameStateIsExclusivelyVisible = isExclusivelyVisible;
+		gameStateChangeType = EGameStateChangeType::Push;
+	}
+
+	void Game::switchGameState(EGameStateType newState)
+	{
+		pendingGameStateType = newState;
+		pendingGameStateIsExclusivelyVisible = false;
+		gameStateChangeType = EGameStateChangeType::Switch;
+	}
+
+	// Public
+
 	Game::Game()
 	{
 		// Generate fake records table
@@ -24,9 +119,9 @@ namespace ArkanoidGame
 	Game::~Game()
 	{
 		// Shutdown all game states
-		while (gameStateStack.size() > 0)
+		while (stateStack.size() > 0)
 		{
-			gameStateStack.pop_back();
+			stateStack.pop_back();
 		}
 
 		gameStateChangeType = EGameStateChangeType::None;
@@ -90,88 +185,6 @@ namespace ArkanoidGame
 		playerRecord.second = 0;
 	}
 
-	void Game::handleWindowEvents(sf::RenderWindow& window)
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			// Close window if close button or Escape key pressed
-			if (event.type == sf::Event::Closed)
-			{
-				window.close();
-			}
-
-			if (gameStateStack.size() > 0)
-			{
-				gameStateStack.back().handleWindowEvent(event);
-			}
-		}
-	}
-
-	bool Game::update(float deltaTime)
-	{
-		if (gameStateChangeType == EGameStateChangeType::Switch)
-		{
-			// Shutdown all game states
-			while (gameStateStack.size() > 0)
-			{
-				gameStateStack.pop_back();
-			}
-		} else if (gameStateChangeType == EGameStateChangeType::Pop)
-		{
-			// Shutdown only current game state
-			if (gameStateStack.size() > 0)
-			{
-				gameStateStack.pop_back();
-			}
-		}
-
-		// Initialize new game state if needed
-		if (pendingGameStateType != EGameStateType::None && pendingGameStateType != EGameStateType::Exit)
-		{
-			gameStateStack.push_back(GameState{ pendingGameStateType, pendingGameStateIsExclusivelyVisible });
-		}
-
-		gameStateChangeType = EGameStateChangeType::None;
-		pendingGameStateType = EGameStateType::None;
-		pendingGameStateIsExclusivelyVisible = false;
-
-		if (gameStateStack.size() > 0)
-		{
-			gameStateStack.back().update(deltaTime);
-			return true;
-		}
-		return false;
-	}
-
-	void Game::draw(sf::RenderWindow& window)
-	{
-		if (gameStateStack.size() > 0)
-		{
-			std::vector<GameState*> visibleGameStates;
-			for (auto it = gameStateStack.rbegin(); it != gameStateStack.rend(); ++it)
-			{
-				visibleGameStates.push_back(&(*it));
-				if (it->isVisible())
-				{
-					break;
-				}
-			}
-
-			for (auto it = visibleGameStates.rbegin(); it != visibleGameStates.rend(); ++it)
-			{
-				(*it)->draw(window);
-			}
-		}
-	}
-
-	void Game::pushGameState(EGameStateType stateType, bool isExclusivelyVisible)
-	{
-		pendingGameStateType = stateType;
-		pendingGameStateIsExclusivelyVisible = isExclusivelyVisible;
-		gameStateChangeType = EGameStateChangeType::Push;
-	}
-
 	void Game::popGameState()
 	{
 		pendingGameStateType = EGameStateType::None;
@@ -179,10 +192,70 @@ namespace ArkanoidGame
 		gameStateChangeType = EGameStateChangeType::Pop;
 	}
 
-	void Game::switchGameState(EGameStateType newState)
+	void Game::startGame()
 	{
-		pendingGameStateType = newState;
-		pendingGameStateIsExclusivelyVisible = false;
-		gameStateChangeType = EGameStateChangeType::Switch;
+		switchGameState(EGameStateType::Playing);
+	}
+
+	void Game::pauseGame()
+	{
+		pushGameState(EGameStateType::Pause, false);
+	}
+
+	void Game::winGame()
+	{
+		pushGameState(EGameStateType::Victory, false);
+	}
+
+	void Game::looseGame()
+	{
+		pushGameState(EGameStateType::GameOver, false);
+	}
+
+	void Game::quitGame()
+	{
+		switchGameState(EGameStateType::Exit);
+	}
+
+	void Game::exitGame()
+	{
+		switchGameState(EGameStateType::MainMenu);
+	}
+
+	void Game::showOptions()
+	{
+		switchGameState(EGameStateType::Options);
+	}
+
+	void Game::showLeaderboards()
+	{
+		pushGameState(EGameStateType::Leaderboard, true);
+	}
+
+	void Game::loadNextLevel()
+	{
+		assert(stateStack.back().getType() == EGameStateType::Playing);
+		auto playingData = (stateStack.back().getData<GameStatePlayingData>());
+		playingData->loadNextLevel();
+	}
+
+	void Game::updateGame(float timeDelta, sf::RenderWindow& window)
+	{
+		handleWindowEvents(window);
+
+		if (update(timeDelta))
+		{
+			// Draw everything here
+			// Clear the window first
+			window.clear();
+
+			draw(window);
+
+			// End the current frame, display window contents on screen
+			window.display();
+		} else
+		{
+			window.close();
+		}
 	}
 }

@@ -34,7 +34,7 @@ namespace ArkanoidGame
 	{
 	private:
 		EGameStateType type{ EGameStateType::None };
-		std::unique_ptr<GameStateData> data{ nullptr };
+		std::shared_ptr<GameStateData> data{ nullptr };
 		bool isExclusivelyVisible{ false };
 
 	public:
@@ -59,6 +59,16 @@ namespace ArkanoidGame
 			isExclusivelyVisible = state.isExclusivelyVisible;
 			state.data = nullptr;
 			return *this;
+		}
+
+		// Getters
+
+		EGameStateType getType() const;
+
+		template<class T>
+		T* getData() const
+		{
+			return static_cast<T*>(data.get());
 		}
 
 		// Methods
