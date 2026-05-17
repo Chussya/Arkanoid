@@ -56,11 +56,6 @@ namespace ArkanoidGame
 		return audio;
 	}
 
-	LevelManager& Game::getLevelManager()
-	{
-		return lvlManager;
-	}
-
 	RecordsVector Game::getSortedRecords()
 	{
 		RecordsVector vRecords(records.begin(), records.end());

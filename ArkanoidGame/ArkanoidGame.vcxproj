@@ -161,6 +161,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="BrickFactory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameSettings.cpp" />
     <ClCompile Include="GameState.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="BrickFactory.h" />
     <ClInclude Include="Collidable.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameState.h" />

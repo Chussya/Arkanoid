@@ -2,10 +2,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <unordered_map>
 
 #include "Brick.h"
 #include "Shell.h"
 #include "Platform.h"
+#include "BrickFactory.h"
+#include "LevelManager.h"
 #include "GameStateData.h"
 
 namespace ArkanoidGame
@@ -24,6 +27,14 @@ namespace ArkanoidGame
 
 		std::vector<std::shared_ptr<GameObject>> gameObjects;
 		std::vector<std::shared_ptr<Brick>> bricks;
+
+		std::unordered_map<BrickType, std::unique_ptr<BrickFactory>> brickFactories;
+		int breackableBricksCount{ 0 };
+
+		// Level
+
+		LevelManager levelManager;
+		int currentLevel{ 1 };
 
 		/// Resources
 		// Font
@@ -52,6 +63,7 @@ namespace ArkanoidGame
 
 		// Other
 
+		void loadNextLevel();
 		void createLevel();
 	};
 }

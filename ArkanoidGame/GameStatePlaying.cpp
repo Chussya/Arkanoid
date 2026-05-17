@@ -49,13 +49,18 @@ namespace ArkanoidGame
 		// Init fonts
 		assert(font.loadFromFile(GAME_SETTINGS.FONT_PATH + "arial.ttf"));
 
+		// Factories Init
+		brickFactories.emplace(BrickType::Simple, std::make_unique<SimpleBrickFactory>());
+		brickFactories.emplace(BrickType::Durable, std::make_unique<DurableBrickFactory>());
+		brickFactories.emplace(BrickType::Unbreackable, std::make_unique<UnbreackableBrickFactory>());
+
 		// Init texts
 		Util::UGraphic::initText(scoreText, "SCORES: " + std::to_string(score), font, sf::Color::White, 20);
 
 		Util::UGraphic::initText(pauseNote, "For pause use [P]", font, sf::Color::White, 20);
 		Util::UGraphic::setItemOrigin(pauseNote, 1.f, 0.f);
 
-		/// Set shell:
+		// Set shell:
 
 		auto shell = std::make_shared<Shell>();
 		shell->setSpeed(GAME_SETTINGS.getShellSpeed());
@@ -67,6 +72,7 @@ namespace ArkanoidGame
 		gameObjects.emplace_back(shell);
 
 		// Init level:
+
 		createLevel();
 	}
 
@@ -106,13 +112,10 @@ namespace ArkanoidGame
 			brick->update(deltaTime);
 		}
 
-		auto aliveBricks = std::count_if(bricks.begin(), bricks.end(), [](std::shared_ptr<Brick> b) { return b->isAlive() && b->getScore() > 0; });
-
-		if (aliveBricks == 0)
+		if (breackableBricksCount == 0)
 		{
-			Application::getInstance().getGame().getLevelManager().nextLevel();
-			Application::getInstance().getGame().pushGameState(EGameStateType::Victory, false);
 			Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Victory);
+			loadNextLevel();
 		}
 		// Check shell reflection
 		else if (ptrShell->checkState(Shell::EShellState::Striked))
@@ -132,6 +135,7 @@ namespace ArkanoidGame
 					if (!brick->isAlive())
 					{
 						score += brick->getScore();
+						--breackableBricksCount;
 					}
 					break;
 				}
@@ -143,46 +147,54 @@ namespace ArkanoidGame
 		}
 	}
 
+	void GameStatePlayingData::loadNextLevel()
+	{
+		if (currentLevel >= levelManager.getMaxLevel())
+		{
+			Game& game = Application::getInstance().getGame();
+
+			//game.WinGame();
+		} else
+		{
+			std::shared_ptr <Platform> ptrPlayer = std::dynamic_pointer_cast<Platform>(gameObjects[0]);
+			std::shared_ptr<Shell> ptrShell = std::dynamic_pointer_cast<Shell>(gameObjects[1]);
+			ptrShell->attachToPlatform();
+
+			bricks.clear();
+			++currentLevel;
+			createLevel();
+		}
+	}
+
 	void GameStatePlayingData::createLevel()
 	{
+		for (const auto& pair : brickFactories)
+		{
+			pair.second->clearCounter();
+		}
+
 		float startHeight{ 100.f };
 		float startWidth{ 60.f };
 		Vector2Df pos = { startWidth, startHeight };
-		BricksTemplate arr = Application::getInstance().getGame().getLevelManager().getLevel();
+		auto level = levelManager.loadLevel(currentLevel);
 
-		std::for_each(arr.begin(), arr.end(),
+		std::for_each(level.begin(), level.end(),
 			[&](const BricksRow& row)
 			{
 				std::for_each(row.begin(), row.end(),
-					[&](int element)
+					[&](BrickType brickType)
 					{
-						switch (element)
-						{
-						case 0:
-						{
-							auto brick = std::make_shared<UnbreackableBrick>(pos);
-							bricks.emplace_back(brick);
-							break;
-						}
-						case 1:
-						{
-							auto brick = std::make_shared<SmoothDestroybleBrick>(pos);
-							bricks.emplace_back(brick);
-							break;
-						}
-						case 2:
-						{
-							auto brick = std::make_shared<DurableBrick>(pos);
-							bricks.emplace_back(brick);
-							break;
-						}
-						default:
-							break;
-						}
+						bricks.emplace_back(brickFactories.at(brickType)->createBrick(pos));
+
 						pos.x += GAME_SETTINGS.BRICK_WIDTH_DEFAULT + GAME_SETTINGS.BRICK_SHIFT_WIDTH;
 					});
 				pos.x = startWidth;
 				pos.y += GAME_SETTINGS.BRICK_SHIFT_HEIGHT;
 			});
+
+		for (const auto& pair : brickFactories)
+		{
+			breackableBricksCount += pair.second->getCreatedBreackableBricksCount();
+		}
 	}
 }

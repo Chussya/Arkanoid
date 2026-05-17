@@ -4,27 +4,26 @@
 
 namespace ArkanoidGame
 {
+	enum class BrickType
+	{
+		Unbreackable = 0,
+		Simple,
+		Durable
+	};
+
 	// 14 - rows of bricks
 	// 5  - columns of bricks
-	using BricksRow = std::array<int, 14>;
+	using BricksRow = std::array<BrickType, 14>;
 	using BricksTemplate = std::array<BricksRow, 5>;
 
 	class LevelManager
 	{
 	private:
-		int levelNum{ 1 };
-		BricksTemplate lvlVector;
+		const int maxLevel{ 3 };
 
-		void loadLevel();
 	public:
-		LevelManager();
+		int getMaxLevel() const;
 
-		// Getters
-
-		BricksTemplate getLevel() const;
-
-		// General methods
-
-		void nextLevel();
+		BricksTemplate loadLevel(int levelNum);
 	};
 }
