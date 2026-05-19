@@ -13,6 +13,7 @@ namespace ArkanoidGame
 			Death = 1,
 			Hit,
 			Effect,
+			Fail,
 			Victory,
 		};
 

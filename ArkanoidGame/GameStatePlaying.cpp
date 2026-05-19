@@ -9,7 +9,7 @@
 
 namespace ArkanoidGame
 {
-	GameStatePlayingData::GameStatePlayingData()
+	GameStatePlayingData::GameStatePlayingData() : tries { GAME_SETTINGS.TRIES_COUNT }
 	{
 		score = Application::getInstance().getGame().getPlayerRecord().second;
 	}
@@ -56,6 +56,8 @@ namespace ArkanoidGame
 
 		// Init texts
 		Util::UGraphic::initText(scoreText, "SCORES: " + std::to_string(score), font, sf::Color::White, 20);
+		Util::UGraphic::initText(triesText, "ATTEMPTS LEFT: " + std::to_string(tries), font, sf::Color::Red, 20);
+		Util::UGraphic::setItemOrigin(triesText, 0.5f, 0.f);
 
 		Util::UGraphic::initText(pauseNote, "For pause use [P]", font, sf::Color::White, 20);
 		Util::UGraphic::setItemOrigin(pauseNote, 1.f, 0.f);
@@ -72,8 +74,8 @@ namespace ArkanoidGame
 		gameObjects.emplace_back(shell);
 
 		// Init sounds
-
 		soundHit.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Hit));
+		soundFail.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Fail));
 		soundEffect.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Effect));
 
 		// Init effects
@@ -157,19 +159,22 @@ namespace ArkanoidGame
 		// Texts
 		window.draw(scoreText);
 		scoreText.setPosition(0, 0);
+		window.draw(triesText);
+		triesText.setPosition(GAME_SETTINGS.SCREEN_WIDTH_GAME / 2.f, 0);
 		window.draw(pauseNote);
 		pauseNote.setPosition(static_cast<float>(GAME_SETTINGS.SCREEN_WIDTH_GAME - 1), 0.f);
 	}
 
 	void GameStatePlayingData::update(float deltaTime)
 	{
-		// Update scores:
+		// Update texts
 		scoreText.setString("SCORES: " + std::to_string(score));
-		
-		std::shared_ptr <Platform> ptrPlayer = std::dynamic_pointer_cast<Platform>(gameObjects[0]);
-		std::shared_ptr<Shell> ptrShell = std::dynamic_pointer_cast<Shell>(gameObjects[1]);
+		triesText.setString("ATTEMPTS LEFT: " + std::to_string(tries));
 
 		// Update game objects
+
+		std::shared_ptr <Platform> ptrPlayer = std::dynamic_pointer_cast<Platform>(gameObjects[0]);
+		std::shared_ptr<Shell> ptrShell = std::dynamic_pointer_cast<Shell>(gameObjects[1]);
 
 		gameObjects[0]->update(mouseMoveX);
 		gameObjects[1]->update(deltaTime);
@@ -200,18 +205,31 @@ namespace ArkanoidGame
 			}
 		} else if (ptrShell->checkState(Shell::EShellState::Fallen))
 		{
-			Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Death);
-			Application::getInstance().getGame().looseGame();
+			--tries;
+
+			if (tries > 0)
+			{
+				soundFail.setVolume(GAME_SETTINGS.getSoundVolume());
+				soundFail.play();
+
+				std::shared_ptr <Platform> ptrPlayer = std::dynamic_pointer_cast<Platform>(gameObjects[0]);
+				std::shared_ptr<Shell> ptrShell = std::dynamic_pointer_cast<Shell>(gameObjects[1]);
+				ptrShell->attachToPlatform();
+			}
+			else
+			{
+				Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Death);
+				Application::getInstance().getGame().looseGame();
+			}
 		}
 	}
 
 	void GameStatePlayingData::loadNextLevel()
 	{
-		if (currentLevel >= levelManager.getMaxLevel())
+		if (currentLevel > levelManager.getMaxLevel())
 		{
 			Game& game = Application::getInstance().getGame();
-
-			//game.WinGame();
+			game.winGame();
 		} else
 		{
 			std::shared_ptr <Platform> ptrPlayer = std::dynamic_pointer_cast<Platform>(gameObjects[0]);
@@ -272,7 +290,7 @@ namespace ArkanoidGame
 					if (GAME_SETTINGS.CHANCE_EFFECT >= chance)
 					{
 						EffectType effect = (EffectType)(Math::getRandNumTo(static_cast<int>(EffectType::Count)));
-						effects.at(EffectType::Squidward).activate();
+						effects.at(effect).activate();
 					}
 				}
 			}

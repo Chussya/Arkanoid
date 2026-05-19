@@ -46,6 +46,8 @@ namespace ArkanoidGame
 
 		// Game
 
+		const int TRIES_COUNT{ 3 };
+
 		const int BRICKS_COUNT_ROW{ 14 };
 		const int BRICKS_COUNT_COL{ 14 };
 		const float BRICK_WIDTH_DEFAULT{ 40.f };

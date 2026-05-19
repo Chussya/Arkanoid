@@ -32,6 +32,7 @@ namespace ArkanoidGame
 		// State data
 
 		int score{ 0 };
+		int tries{ 0 };
 		float mouseMoveX{ 0.f };
 
 		// Game objects
@@ -55,11 +56,13 @@ namespace ArkanoidGame
 		// Text
 
 		sf::Text scoreText;
+		sf::Text triesText;
 		sf::Text pauseNote;
 
 		// Sounds
 
 		sf::Sound soundHit;
+		sf::Sound soundFail;
 		sf::Sound soundEffect;
 
 		//Bonus
