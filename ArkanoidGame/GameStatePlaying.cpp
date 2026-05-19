@@ -269,7 +269,7 @@ namespace ArkanoidGame
 				if (std::find_if(effects.begin(), effects.end(), [](auto& pairEffects) { return pairEffects.second.isActivated(); }) == effects.end())
 				{
 					auto chance = Math::getRandNumTo(100);
-					if (GAME_SETTINGS.CHANCE_EFFECT <= chance)
+					if (GAME_SETTINGS.CHANCE_EFFECT >= chance)
 					{
 						EffectType effect = (EffectType)(Math::getRandNumTo(static_cast<int>(EffectType::Count)));
 						effects.at(EffectType::Squidward).activate();
