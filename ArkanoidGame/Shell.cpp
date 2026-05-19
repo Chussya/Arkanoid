@@ -117,6 +117,7 @@ namespace ArkanoidGame
 				invertY();
 			}
 			setCollisionSide(ECollisionSide::Empty);
+			Emit();
 		} else if (state.IsBitMaskOn(EShellState::Fallen))
 		{
 

@@ -3,6 +3,7 @@
 #include "Math.h"
 #include "GameObject.h"
 #include "Collidable.h"
+#include "IObservable.h"
 
 namespace ArkanoidGame
 {
@@ -16,7 +17,7 @@ namespace ArkanoidGame
 		Vector2Df* ptrPos;
 	};
 
-	class Shell : public GameObject, public Collidable
+	class Shell : public GameObject, public Collidable, public IObservable
 	{
 	public:
 		enum class EShellState

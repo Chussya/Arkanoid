@@ -7,6 +7,7 @@
 #include "Brick.h"
 #include "Shell.h"
 #include "Platform.h"
+#include "IObservable.h"
 #include "BrickFactory.h"
 #include "LevelManager.h"
 #include "GameStateData.h"
@@ -15,7 +16,7 @@ namespace ArkanoidGame
 {
 	class Game;
 
-	class GameStatePlayingData : public GameStateData, public std::enable_shared_from_this<GameStatePlayingData>
+	class GameStatePlayingData : public GameStateData, public IObserver, public std::enable_shared_from_this<GameStatePlayingData>
 	{
 	private:
 		// State data
@@ -65,5 +66,9 @@ namespace ArkanoidGame
 
 		void loadNextLevel();
 		void createLevel();
+
+		// Inherited via IObserver
+
+		void Notify(std::shared_ptr<IObservable> observable) override;
 	};
 }

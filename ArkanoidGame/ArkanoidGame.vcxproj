@@ -196,6 +196,7 @@
     <ClInclude Include="GameStateOptions.h" />
     <ClInclude Include="GameStatePause.h" />
     <ClInclude Include="GameStateVictory.h" />
+    <ClInclude Include="IObservable.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Record.h" />

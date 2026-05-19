@@ -64,6 +64,7 @@ namespace ArkanoidGame
 
 		auto shell = std::make_shared<Shell>();
 		shell->setSpeed(GAME_SETTINGS.getShellSpeed());
+		shell->AddObserver(weak_from_this());
 
 		auto player = std::make_shared<Platform>(Vector2Df({ static_cast<float>(GAME_SETTINGS.SCREEN_WIDTH_GAME / 2), GAME_SETTINGS.SCREEN_HEIGHT_GAME - (GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT / 2) }));
 		player->attachShell(*shell);
@@ -131,12 +132,6 @@ namespace ArkanoidGame
 					soundHit.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Hit));
 					soundHit.setVolume(GAME_SETTINGS.getSoundVolume());
 					soundHit.play();
-
-					if (!brick->isAlive())
-					{
-						score += brick->getScore();
-						--breackableBricksCount;
-					}
 					break;
 				}
 			}
@@ -185,6 +180,7 @@ namespace ArkanoidGame
 					[&](BrickType brickType)
 					{
 						bricks.emplace_back(brickFactories.at(brickType)->createBrick(pos));
+						bricks.back()->AddObserver(weak_from_this());
 
 						pos.x += GAME_SETTINGS.BRICK_WIDTH_DEFAULT + GAME_SETTINGS.BRICK_SHIFT_WIDTH;
 					});
@@ -195,6 +191,18 @@ namespace ArkanoidGame
 		for (const auto& pair : brickFactories)
 		{
 			breackableBricksCount += pair.second->getCreatedBreackableBricksCount();
+		}
+	}
+
+	void GameStatePlayingData::Notify(std::shared_ptr<IObservable> observable)
+	{
+		if (auto brick = std::dynamic_pointer_cast<Brick>(observable))
+		{
+			if (!brick->isAlive())
+			{
+				score += brick->getScore();
+				--breackableBricksCount;
+			}
 		}
 	}
 }

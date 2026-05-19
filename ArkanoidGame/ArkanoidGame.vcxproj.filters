@@ -73,6 +73,9 @@
     <ClCompile Include="LevelManager.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="BrickFactory.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -145,6 +148,10 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="LevelManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="BrickFactory.h" />
+    <ClInclude Include="IObservable.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
