@@ -76,6 +76,9 @@
     <ClCompile Include="BrickFactory.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -152,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="BrickFactory.h" />
     <ClInclude Include="IObservable.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

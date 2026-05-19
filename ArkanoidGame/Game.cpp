@@ -111,6 +111,7 @@ namespace ArkanoidGame
 
 		audio.loadSoundBuffer(AudioManager::ESoundEffect::Hit, GAME_SETTINGS.SOUND_PATH + "hit.wav");
 		audio.loadSoundBuffer(AudioManager::ESoundEffect::Death, GAME_SETTINGS.SOUND_PATH + "death.wav");
+		audio.loadSoundBuffer(AudioManager::ESoundEffect::Effect, GAME_SETTINGS.SOUND_PATH + "effect.wav");
 		audio.loadSoundBuffer(AudioManager::ESoundEffect::Victory, GAME_SETTINGS.SOUND_PATH + "victory.wav");
 
 		switchGameState(EGameStateType::MainMenu);

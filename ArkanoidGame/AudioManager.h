@@ -12,6 +12,7 @@ namespace ArkanoidGame
 		{
 			Death = 1,
 			Hit,
+			Effect,
 			Victory,
 		};
 

@@ -63,7 +63,6 @@ namespace ArkanoidGame
 		// Set shell:
 
 		auto shell = std::make_shared<Shell>();
-		shell->setSpeed(GAME_SETTINGS.getShellSpeed());
 		shell->AddObserver(weak_from_this());
 
 		auto player = std::make_shared<Platform>(Vector2Df({ static_cast<float>(GAME_SETTINGS.SCREEN_WIDTH_GAME / 2), GAME_SETTINGS.SCREEN_HEIGHT_GAME - (GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT / 2) }));
@@ -71,6 +70,73 @@ namespace ArkanoidGame
 
 		gameObjects.emplace_back(player);
 		gameObjects.emplace_back(shell);
+
+		// Init sounds
+
+		soundHit.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Hit));
+		soundEffect.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Effect));
+
+		// Init effects
+
+		effects.emplace(EffectType::SlowBall, Effect(
+			[wShell = std::weak_ptr<Shell>(shell), &sound = soundEffect]() {
+				auto shell = wShell.lock();
+				if (shell)
+				{
+					sound.setVolume(GAME_SETTINGS.getSoundVolume());
+					sound.play();
+					shell->setSpeedMultiply(0.5f);
+				}
+			},
+			[wShell = std::weak_ptr<Shell>(shell)]() {
+				auto shell = wShell.lock();
+				if (shell)
+				{
+					shell->setSpeedMultiply(1.f);
+				}
+			},
+			GAME_SETTINGS.EFFECT_DURATION
+		));
+
+		effects.emplace(EffectType::FastBall, Effect(
+			[wShell = std::weak_ptr<Shell>(shell), &sound = soundEffect]() {
+				auto shell = wShell.lock();
+				if (shell)
+				{
+					sound.setVolume(GAME_SETTINGS.getSoundVolume());
+					sound.play();
+					shell->setSpeedMultiply(1.5f);
+				}
+			},
+			[wShell = std::weak_ptr<Shell>(shell)]() {
+				auto shell = wShell.lock();
+				if (shell)
+				{
+					shell->setSpeedMultiply(1.f);
+				}
+			},
+			GAME_SETTINGS.EFFECT_DURATION
+		));
+
+		effects.emplace(EffectType::Squidward, Effect(
+			[wPlatform = std::weak_ptr<Platform>(player), &sound = soundEffect]() {
+				auto platform = wPlatform.lock();
+				if (platform)
+				{
+					sound.setVolume(GAME_SETTINGS.getSoundVolume());
+					sound.play();
+					platform->setWidth(200.f);
+				}
+			},
+			[wPlatform = std::weak_ptr<Platform>(player)]() {
+				auto platform = wPlatform.lock();
+				if (platform)
+				{
+					platform->setWidth(GAME_SETTINGS.PLATFORM_WIDTH_DEFAULT);
+				}
+			},
+			GAME_SETTINGS.EFFECT_DURATION
+		));
 
 		// Init level:
 
@@ -108,10 +174,8 @@ namespace ArkanoidGame
 		gameObjects[0]->update(mouseMoveX);
 		gameObjects[1]->update(deltaTime);
 
-		for (auto& brick : bricks)
-		{
-			brick->update(deltaTime);
-		}
+		std::for_each(bricks.begin(), bricks.end(), [deltaTime](auto& brick){ brick->update(deltaTime); });
+		std::for_each(effects.begin(), effects.end(), [deltaTime](auto& pairEffects) { pairEffects.second.update(deltaTime); });
 
 		if (breackableBricksCount == 0)
 		{
@@ -129,7 +193,6 @@ namespace ArkanoidGame
 			{
 				if (brick->isAlive() && brick->checkCollision(ptrShell))
 				{
-					soundHit.setBuffer(Application::getInstance().getGame().getAudio().getSoundBuffer(AudioManager::ESoundEffect::Hit));
 					soundHit.setVolume(GAME_SETTINGS.getSoundVolume());
 					soundHit.play();
 					break;
@@ -202,6 +265,16 @@ namespace ArkanoidGame
 			{
 				score += brick->getScore();
 				--breackableBricksCount;
+
+				if (std::find_if(effects.begin(), effects.end(), [](auto& pairEffects) { return pairEffects.second.isActivated(); }) == effects.end())
+				{
+					auto chance = Math::getRandNumTo(100);
+					if (GAME_SETTINGS.CHANCE_EFFECT <= chance)
+					{
+						EffectType effect = (EffectType)(Math::getRandNumTo(static_cast<int>(EffectType::Count)));
+						effects.at(EffectType::Squidward).activate();
+					}
+				}
 			}
 		}
 	}

@@ -4,6 +4,7 @@
 #include <SFML/Audio.hpp>
 #include <unordered_map>
 
+#include "Effect.h"
 #include "Brick.h"
 #include "Shell.h"
 #include "Platform.h"
@@ -15,6 +16,15 @@
 namespace ArkanoidGame
 {
 	class Game;
+
+	enum class EffectType
+	{
+		FastBall = 0,
+		SlowBall,
+		Squidward,
+
+		Count
+	};
 
 	class GameStatePlayingData : public GameStateData, public IObserver, public std::enable_shared_from_this<GameStatePlayingData>
 	{
@@ -50,6 +60,11 @@ namespace ArkanoidGame
 		// Sounds
 
 		sf::Sound soundHit;
+		sf::Sound soundEffect;
+
+		//Bonus
+
+		std::map<EffectType, Effect> effects;
 
 	public:
 		GameStatePlayingData();

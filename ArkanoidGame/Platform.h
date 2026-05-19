@@ -22,6 +22,7 @@ namespace ArkanoidGame
 
 		void attachShell(Shell& shell);
 		void strikeShell(std::shared_ptr<Shell> shell);
+		void setWidth(const float newWidth);
 
 		/// Inherited via GameObject
 

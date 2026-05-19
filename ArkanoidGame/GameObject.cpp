@@ -31,8 +31,16 @@ namespace ArkanoidGame
 		return sprite.getGlobalBounds();
 	}
 
-	void GameObject::setSpriteOrigin(float originX, float originY)
+	void GameObject::setSpriteOrigin(const float originX, const float originY)
 	{
 		Util::UGraphic::setItemOrigin(sprite, originX, originY);
+	}
+
+	void GameObject::updateSpriteSize(const float width, const float height)
+	{
+		const float scaleX{ width / sprite.getGlobalBounds().width };
+		const float scaleY{ height / sprite.getGlobalBounds().height };
+
+		sprite.scale(scaleX, scaleY);
 	}
 }
