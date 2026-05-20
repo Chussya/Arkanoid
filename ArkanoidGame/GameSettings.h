@@ -57,7 +57,10 @@ namespace ArkanoidGame
 
 		const float BONUS_SPEED{ 200.f };
 		const float EFFECT_DURATION{ 10.f };
+		const float EFFECT_FALL_SPEED{ 100.f };
 		const int CHANCE_EFFECT{ 10 };
+		const float EFFECT_WIDTH{ 20.f };
+		const float EFFECT_HEIGHT{ 20.f };
 
 		const float PLATFORM_WIDTH_DEFAULT{ 90.f };
 		const float PLATFORM_HEIGHT_DEFAULT{ 20.f };

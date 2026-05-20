@@ -67,7 +67,7 @@ namespace ArkanoidGame
 
 		//Bonus
 
-		std::map<EffectType, Effect> effects;
+		std::map<EffectType, std::shared_ptr<Effect>> effects;
 
 	public:
 		GameStatePlayingData();
