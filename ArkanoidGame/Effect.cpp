@@ -35,13 +35,13 @@ namespace ArkanoidGame
 		}
 	}
 
-	void Effect::update(float timeDelta)
+	void Effect::update(float deltaTime)
 	{
 		if (!isActive)
 		{
 			return;
 		}
-		curentActiveTime += timeDelta;
+		curentActiveTime += deltaTime;
 
 		if (curentActiveTime >= duration)
 		{

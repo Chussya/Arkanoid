@@ -20,6 +20,6 @@ namespace ArkanoidGame
 		bool isActivated();
 
 		void activate();
-		void update(float timeDelta);
+		void update(float deltaTime);
 	};
 }
