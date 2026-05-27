@@ -20,6 +20,7 @@ namespace ArkanoidGame
 		std::function<void()> deactivation{ []() {} };
 
 		void deactivate();
+		void fallen();
 
 	public:
 		Effect(const sf::Color& color, std::function<void()>&& bonusActivate, std::function<void()>&& bonusDeactivate, float bonusDuration);

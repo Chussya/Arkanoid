@@ -18,6 +18,12 @@ namespace ArkanoidGame
 		}
 	}
 
+	void Effect::fallen()
+	{
+		isFallen = false;
+		sprite.setPosition(-50.f, -50.f);
+	}
+
 	// Public
 
 	Effect::Effect(const sf::Color& color, std::function<void()>&& effectStart, std::function<void()>&& effectEnd, float bonusDuration) :
@@ -59,10 +65,8 @@ namespace ArkanoidGame
 
 	void Effect::finish()
 	{
-		isFallen = false;
-		isActive = false;
-		sprite.setPosition(-50.f, -50.f);
-		curentActiveTime = 0;
+		fallen();
+		deactivate();
 	}
 
 	void Effect::update(const float deltaTime)
@@ -100,8 +104,7 @@ namespace ArkanoidGame
 
 	void Effect::onHit()
 	{
-		isFallen = false;
-		sprite.setPosition(-50.f, -50.f);
+		fallen();
 		Emit();
 	}
 }
