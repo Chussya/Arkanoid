@@ -34,7 +34,7 @@ namespace ArkanoidGame
 		}
 		if (event.type == sf::Event::KeyPressed)
 		{
-			if (event.key.code == sf::Keyboard::Escape || event.key.code == sf::Keyboard::B)
+			if (event.key.code == sf::Keyboard::Escape)
 			{
 				Application::getInstance().getGame().exitGame();
 			} else if (event.key.code == sf::Keyboard::P)
@@ -192,9 +192,7 @@ namespace ArkanoidGame
 		{
 			Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Victory);
 			loadNextLevel();
-		}
-
-		else if (ptrShell->checkState(Shell::EShellState::Striked))
+		} else if (ptrShell->checkState(Shell::EShellState::Striked))
 		{
 			// Platform reflection
 			ptrPlayer->checkCollision(ptrShell);
@@ -320,7 +318,7 @@ namespace ArkanoidGame
 
 						if (!filtered.empty())
 						{
-							effects.at(filtered[Math::getRandNumTo(filtered.size())])->create(brick->getPosition());
+							effects.at(filtered[Math::getRandNumTo((int)filtered.size())])->create(brick->getPosition());
 						}
 					}
 				}

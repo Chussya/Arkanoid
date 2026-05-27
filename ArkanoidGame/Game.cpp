@@ -75,7 +75,6 @@ namespace ArkanoidGame
 					break;
 				}
 			}
-
 			for (auto it = visibleGameStates.rbegin(); it != visibleGameStates.rend(); ++it)
 			{
 				(*it)->draw(window);
@@ -211,7 +210,7 @@ namespace ArkanoidGame
 
 	void Game::looseGame()
 	{
-		pushGameState(EGameStateType::GameOver, false);
+		switchGameState(EGameStateType::GameOver);
 	}
 
 	void Game::quitGame()
