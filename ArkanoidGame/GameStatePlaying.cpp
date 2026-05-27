@@ -188,6 +188,13 @@ namespace ArkanoidGame
 		std::for_each(bricks.begin(), bricks.end(), [deltaTime](auto& brick){ brick->update(deltaTime); });
 		std::for_each(effects.begin(), effects.end(), [deltaTime](auto& pairEffects) { pairEffects.second->update(deltaTime); });
 
+		// Effect reflection
+		std::for_each(effects.begin(), effects.end(),
+			[&](auto& pairEffects)
+			{
+				pairEffects.second->checkCollision(ptrPlayer);
+			});
+
 		if (breackableBricksCount == 0)
 		{
 			Application::getInstance().getGame().getAudio().playFullSound(AudioManager::ESoundEffect::Victory);
@@ -196,13 +203,6 @@ namespace ArkanoidGame
 		{
 			// Platform reflection
 			ptrPlayer->checkCollision(ptrShell);
-
-			// Effect reflection
-			std::for_each(effects.begin(), effects.end(), 
-				[&](auto& pairEffects)
-				{
-					pairEffects.second->checkCollision(ptrPlayer);
-				});
 
 			// Bricks reflection
 			for (auto& brick : bricks)
