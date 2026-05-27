@@ -300,7 +300,7 @@ namespace ArkanoidGame
 				if (std::find_if(effects.begin(), effects.end(), [](auto& pairEffects) { return pairEffects.second->isActivated(); }) == effects.end())
 				{
 					auto chance = Math::getRandNumTo(100);
-					if (GAME_SETTINGS.CHANCE_EFFECT >= chance)
+					if (GAME_SETTINGS.CHANCE_EFFECT > chance)
 					{
 						auto condition = [](const std::shared_ptr<Effect>& sEffect)
 							{
