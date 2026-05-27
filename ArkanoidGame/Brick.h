@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Math.h"
 #include "Collidable.h"
 #include "IObservable.h"

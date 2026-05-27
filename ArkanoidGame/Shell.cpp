@@ -1,7 +1,8 @@
 #include "Shell.h"
 
-#include "GameSettings.h"
 #include <cassert>
+
+#include "GameSettings.h"
 
 namespace ArkanoidGame
 {

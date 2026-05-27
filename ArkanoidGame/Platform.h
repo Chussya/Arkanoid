@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "GameObject.h"
 #include "Collidable.h"
 

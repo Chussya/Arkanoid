@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <unordered_map>
+#include <memory>
 
 #include "Effect.h"
 #include "Brick.h"
