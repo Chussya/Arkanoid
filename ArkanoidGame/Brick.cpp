@@ -98,6 +98,11 @@ namespace ArkanoidGame
 		return false;
 	}
 
+	void Brick::onHit()
+	{
+		Emit();
+	}
+
 	SmoothDestroybleBrick::SmoothDestroybleBrick(const Vector2Df& position, const sf::Color& color) : Brick(position, color), color{ color } { score = 1; }
 
 	void SmoothDestroybleBrick::update(const float deltaTime)

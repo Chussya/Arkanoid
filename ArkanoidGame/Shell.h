@@ -1,8 +1,11 @@
 #pragma once
 
+#include <memory>
+
 #include "Math.h"
 #include "GameObject.h"
 #include "Collidable.h"
+#include "IObservable.h"
 
 namespace ArkanoidGame
 {
@@ -16,7 +19,7 @@ namespace ArkanoidGame
 		Vector2Df* ptrPos;
 	};
 
-	class Shell : public GameObject, public Collidable
+	class Shell : public GameObject, public Collidable, public IObservable
 	{
 	public:
 		enum class EShellState
@@ -32,7 +35,7 @@ namespace ArkanoidGame
 		Math::BitMask<EShellState> state;
 
 		// Speed of general vector of move
-		float speed;
+		float speedMultiply;
 
 		// Speed of vectors X and Y
 		Vector2Df vectorSpeed;
@@ -45,7 +48,7 @@ namespace ArkanoidGame
 
 		/// Setters
 
-		void setSpeed(const float speed);
+		void setSpeedMultiply(const float speed);
 		void setPlatformData(const PlatformData platformData);
 
 		/// Interaction

@@ -46,6 +46,8 @@ namespace ArkanoidGame
 
 		// Game
 
+		const int TRIES_COUNT{ 3 };
+
 		const int BRICKS_COUNT_ROW{ 14 };
 		const int BRICKS_COUNT_COL{ 14 };
 		const float BRICK_WIDTH_DEFAULT{ 40.f };
@@ -53,7 +55,12 @@ namespace ArkanoidGame
 		const float BRICK_SHIFT_WIDTH{ 10.f };
 		const float BRICK_SHIFT_HEIGHT{ 25.f };
 
-		const float BONUS_SPEED{ 100.f };
+		const float BONUS_SPEED{ 200.f };
+		const float EFFECT_DURATION{ 10.f };
+		const float EFFECT_FALL_SPEED{ 100.f };
+		const int CHANCE_EFFECT{ 10 };
+		const float EFFECT_WIDTH{ 20.f };
+		const float EFFECT_HEIGHT{ 20.f };
 
 		const float PLATFORM_WIDTH_DEFAULT{ 90.f };
 		const float PLATFORM_HEIGHT_DEFAULT{ 20.f };

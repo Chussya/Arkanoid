@@ -1,7 +1,8 @@
 #include "Shell.h"
 
-#include "GameSettings.h"
 #include <cassert>
+
+#include "GameSettings.h"
 
 namespace ArkanoidGame
 {
@@ -10,7 +11,7 @@ namespace ArkanoidGame
 	Shell::Shell() :
 		state{ EShellState::Empty },
 		platformData{ nullptr, nullptr },
-		speed{ 0.f },
+		speedMultiply{ 1.f },
 		Collidable(Collidable::ECollisionShape::Circle),
 		GameObject(GAME_SETTINGS.RESOURCES_PATH + GAME_SETTINGS.IMG_PATH + "shell.png", { 0.f, 0.f }, GAME_SETTINGS.BALL_RADIUS_DEFAULT * 2, GAME_SETTINGS.BALL_RADIUS_DEFAULT * 2)
 	{
@@ -19,9 +20,9 @@ namespace ArkanoidGame
 
 	Shell::~Shell() {}
 
-	void Shell::setSpeed(const float speed)
+	void Shell::setSpeedMultiply(const float speed)
 	{
-		this->speed = speed;
+		this->speedMultiply = speed;
 	}
 
 	void Shell::setPlatformData(const PlatformData platformData)
@@ -47,7 +48,7 @@ namespace ArkanoidGame
 	void Shell::strike()
 	{
 		state.SetMask(EShellState::Striked);
-		vectorSpeed.y = -speed;
+		vectorSpeed.y = -GAME_SETTINGS.getShellSpeed();
 
 		if (getPosition().x - (getRect().width / 2) <= 0)
 		{
@@ -60,7 +61,7 @@ namespace ArkanoidGame
 
 	void Shell::collidePlatform(ECollisionSide collision)
 	{
-		vectorSpeed.x = speed * ((sprite.getPosition().x - platformData.ptrPos->x) / (*platformData.ptrWidth / 2));
+		vectorSpeed.x = vectorSpeed.y * ((sprite.getPosition().x - platformData.ptrPos->x) / (*platformData.ptrWidth / 2));
 
 		setCollisionSide(collision);
 	}
@@ -83,7 +84,7 @@ namespace ArkanoidGame
 	{
 		if (state.IsBitMaskOn(EShellState::Striked))
 		{
-			sprite.setPosition(sprite.getPosition().x + vectorSpeed.x * deltaTime, sprite.getPosition().y + vectorSpeed.y * deltaTime);
+			sprite.setPosition(sprite.getPosition().x + vectorSpeed.x * speedMultiply * deltaTime, sprite.getPosition().y + vectorSpeed.y * speedMultiply * deltaTime);
 
 			if (getRect().top <= 0.f)
 			{
@@ -117,6 +118,7 @@ namespace ArkanoidGame
 				invertY();
 			}
 			setCollisionSide(ECollisionSide::Empty);
+			Emit();
 		} else if (state.IsBitMaskOn(EShellState::Fallen))
 		{
 

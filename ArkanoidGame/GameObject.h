@@ -28,6 +28,7 @@ namespace ArkanoidGame
 
 		// General methods
 
-		virtual void setSpriteOrigin(float originX, float originY);
+		virtual void setSpriteOrigin(const float originX, const float originY);
+		virtual void updateSpriteSize(const float width, const float height);
 	};
 }

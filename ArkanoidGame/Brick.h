@@ -1,7 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include "Math.h"
 #include "Collidable.h"
+#include "IObservable.h"
 #include "GameObject.h"
 
 namespace ArkanoidGame
@@ -9,7 +12,7 @@ namespace ArkanoidGame
 	class Shell;
 	class GameSettings;
 
-	class Brick : public GameObject, public Collidable
+	class Brick : public GameObject, public Collidable, public IObservable
 	{
 	protected:
 		const float fadeSpeed{ 0.f };
@@ -38,6 +41,7 @@ namespace ArkanoidGame
 		// Inherited via Collidable
 
 		bool isCollide(std::shared_ptr<Collidable> collidable) override;
+		void onHit() override;
 	};
 
 	class SmoothDestroybleBrick : public Brick

@@ -9,13 +9,18 @@
 
 namespace ArkanoidGame
 {
-	// Private
+	int LevelManager::getMaxLevel() const
+	{
+		return maxLevel;
+	}
 
-	void LevelManager::loadLevel()
+	BricksTemplate LevelManager::loadLevel(int levelNum)
 	{
 		const std::string fileName{ "levels.config" };
 
 		std::fstream file{ GAME_SETTINGS.CONFIG_PATH + fileName };
+
+		BricksTemplate arr;
 
 		if (file.is_open())
 		{
@@ -39,7 +44,7 @@ namespace ArkanoidGame
 						std::for_each(line.begin(), line.end(),
 							[&](const char c)
 							{
-								lvlVector[row][col] = { c - '0' };
+								arr[row][col] = static_cast<BrickType>(c - '0');
 								++col;
 							});
 						col = 0;
@@ -55,26 +60,6 @@ namespace ArkanoidGame
 		{
 			assert(false);
 		}
-	}
-
-	// Public
-
-	LevelManager::LevelManager()
-	{
-		loadLevel();
-	}
-
-	BricksTemplate LevelManager::getLevel() const
-	{
-		return lvlVector;
-	}
-
-	void LevelManager::nextLevel()
-	{
-		if (++levelNum > GAME_SETTINGS.MAX_LEVEL)
-		{
-			levelNum = 1;
-		}
-		loadLevel();
+		return arr;
 	}
 }

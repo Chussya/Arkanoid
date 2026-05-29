@@ -63,7 +63,7 @@ namespace ArkanoidGame
 			"Menu",
 			font,
 			30,
-			[]() { Application::getInstance().getGame().switchGameState(EGameStateType::MainMenu); }
+			[]() { Application::getInstance().getGame().exitGame(); }
 		);
 		exitMenu.setItemOrigin(0.5f, 0.5f);
 

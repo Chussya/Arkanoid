@@ -24,6 +24,12 @@ namespace ArkanoidGame
 		}
 	}
 
+	void Platform::setWidth(const float newWidth)
+	{
+		width = newWidth;
+		updateSpriteSize(width, GAME_SETTINGS.PLATFORM_HEIGHT_DEFAULT);
+	}
+
 	void Platform::attachShell(Shell& shell)
 	{
 		shell.setPlatformData({ &width, &pos });
